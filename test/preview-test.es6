@@ -13,7 +13,7 @@ describe('getPreview()', () => {
   describe('for an image file', (done) => {
     beforeEach(() => {
       file = getFile('foo.jpg', 'image/jpg')
-      promise = getPreview(file)
+      promise = getPreview({file})
     })
 
     it('returns a promise that resolve with an image', (done) => {
@@ -26,7 +26,7 @@ describe('getPreview()', () => {
 
     describe('called a second time', () => {
       it('returns the same promise object', () => {
-        expect(getPreview(file)).to.be(promise)
+        expect(getPreview({file})).to.be(promise)
       })
     })
 
@@ -37,7 +37,7 @@ describe('getPreview()', () => {
 
       it('sets the file reader progress handler with it', (done) => {
         const spy = sinon.spy()
-        getPreview(file, spy).then(() => {
+        getPreview({file, onprogress: spy}).then(() => {
           expect(spy.called).to.be.ok()
           done()
         })
@@ -48,7 +48,7 @@ describe('getPreview()', () => {
   describe('for a non-image file', (done) => {
     beforeEach(() => {
       file = getFile('foo.pdf', 'application/pdf')
-      promise = getPreview(file)
+      promise = getPreview({file})
     })
 
     it('returns a promise that resolves with undefined', (done) => {
