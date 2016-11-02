@@ -45,12 +45,17 @@ describe('getPreview()', () => {
     })
   })
 
-  describe.skip('for a non-image file', (done) => {
+  describe('for a non-image file', (done) => {
     beforeEach(() => {
       file = getFile('foo.pdf', 'application/pdf')
       promise = getPreview(file)
     })
 
-    it('', () => {})
+    it('returns a promise that resolves with undefined', (done) => {
+      promise.then((value) => {
+        expect(value).to.be(undefined)
+        done()
+      })
+    })
   })
 })

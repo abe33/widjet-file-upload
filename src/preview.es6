@@ -11,6 +11,19 @@ export function disposePreview (file) {
 }
 
 export function getPreview (file, onprogress) {
+  switch (file.type) {
+    case 'image/jpeg':
+    case 'image/jpg':
+    case 'image/png':
+    case 'image/gif':
+    case 'image/bmp':
+      return getImagePreview(file, onprogress)
+    default:
+      return Promise.resolve()
+
+  }
+}
+export function getImagePreview (file, onprogress) {
   const key = fileKey(file)
   return previewsByFileKeys[key]
     ? previewsByFileKeys[key]
