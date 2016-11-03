@@ -2,7 +2,7 @@ import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
 import sinon from 'sinon'
 
-import {previewBuilder, disposePreview, resetPreviewsCache} from '../src/preview'
+import {previewBuilder, disposePreview, resetPreviewCache, getTextPreview} from '../src/preview'
 import {getFile} from './helpers'
 
 describe('previewBuilder()', () => {
@@ -11,7 +11,7 @@ describe('previewBuilder()', () => {
   let file, promise, getPreview, spy
 
   beforeEach(() => {
-    resetPreviewsCache()
+    resetPreviewCache()
   })
 
   describe('without any previewers', () => {
@@ -54,7 +54,7 @@ describe('previewBuilder()', () => {
       })
     })
 
-    describe('for a non-image file', (done) => {
+    describe('for a non-image binary file', (done) => {
       beforeEach(() => {
         file = getFile('foo.pdf', 'application/pdf')
         promise = getPreview({file})
@@ -85,6 +85,23 @@ describe('previewBuilder()', () => {
 
     it('returns the same promise on successive calls', () => {
       expect(getPreview({file})).to.be(promise)
+    })
+
+    describe('for a text file', (done) => {
+      beforeEach(() => {
+        getPreview = previewBuilder([
+          [o => o.file.type === 'text/plain', getTextPreview]
+        ])
+        file = getFile('foo.txt', 'text/plain')
+        promise = getPreview({file})
+      })
+
+      it('returns pre tag with the file content', (done) => {
+        promise.then((value) => {
+          expect(value.outerHTML).to.eql('<pre>foo</pre>')
+          done()
+        })
+      })
     })
   })
 })

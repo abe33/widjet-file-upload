@@ -30,7 +30,7 @@ export function disposePreview (file) {
   delete previewsByFileKeys[fileKey(file)]
 }
 
-export function resetPreviewsCache () {
+export function resetPreviewCache () {
   for (let key in previewsByFileKeys) { delete previewsByFileKeys[key] }
 }
 
@@ -41,5 +41,15 @@ export function getImagePreview ({file, onprogress}) {
     reader.onerror = reject
     reader.onprogress = onprogress
     reader.readAsDataURL(file)
+  })
+}
+
+export function getTextPreview ({file, onprogress}) {
+  return new Promise((resolve, reject) => {
+    const reader = new window.FileReader()
+    reader.onload = (e) => resolve(getNode(`<pre>${e.target.result}</pre>`))
+    reader.onerror = reject
+    reader.onprogress = onprogress
+    reader.readAsText(file)
   })
 }

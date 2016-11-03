@@ -1,8 +1,10 @@
 import widgets from 'widjet'
 import {getNode, detachNode, when} from 'widjet-utils'
-import {previewBuilder, disposePreview} from './preview'
+import {previewBuilder, disposePreview, getImagePreview, getTextPreview, resetPreviewCache} from './preview'
 
 const filesById = {}
+
+export {getImagePreview, getTextPreview, previewBuilder, disposePreview, resetPreviewCache}
 
 widgets.define('file-upload', (options) => {
   const wrap = options.wrap || defaultWrap
