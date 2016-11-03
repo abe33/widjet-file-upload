@@ -1,13 +1,51 @@
 import widgets from 'widjet'
-import {getNode} from 'widjet-utils'
+import {getNode, asArray} from 'widjet-utils'
+import {previewBuilder, disposePreview} from './preview'
+
+const filesById = {}
 
 widgets.define('file-upload', (options) => {
   const wrap = options.wrap || defaultWrap
+  const previewSelector = options.previewSelector || '.preview'
+  const nameMetaSelector = options.nameMetaSelector || '.meta .name'
+  const mimeMetaSelector = options.mimeMetaSelector || '.meta .mime'
+  const dimensionsMetaSelector = options.dimensionsMetaSelector || '.meta .dimensions'
+  const sizeMetaSelector = options.sizeMetaSelector || '.meta .size'
+
+  const getPreview = previewBuilder()
+
   return (input) => {
     const container = input.parentNode
     const wrapper = wrap(input)
     const nextSibling = input.nextElementSibling
     container.insertBefore(wrapper, nextSibling)
+
+    const previewContainer = wrapper.querySelector(previewSelector)
+    const size = wrapper.querySelector(sizeMetaSelector)
+    const dimensions = wrapper.querySelector(dimensionsMetaSelector)
+    const name = wrapper.querySelector(nameMetaSelector)
+    const mime = wrapper.querySelector(mimeMetaSelector)
+
+    input.addEventListener('change', (e) => {
+      const previousImage = previewContainer.querySelector('img')
+      if (previousImage) { detachNode(previousImage) }
+
+      if (filesById[input.id]) {
+        disposePreview(filesById[input.id])
+        delete filesById[input.id]
+      }
+
+      const file = input.files[0]
+
+      file && getPreview({file}).then((preview) => {
+        preview.onload = () => writeText(dimensions, formatDimensions(preview))
+        previewContainer.appendChild(preview)
+        writeText(size, formatSize(file.size))
+        writeText(name, file.name)
+        writeText(mime, file.type)
+        filesById[input.id] = file
+      })
+    })
   }
 })
 
@@ -32,6 +70,18 @@ const defaultWrap = (input) => {
   `)
   wrapper.querySelector('label').appendChild(input)
   return wrapper
+}
+
+function writeText (node, value) {
+    node && (node.textContent = value)
+}
+
+function formatSize (size) {
+  return `${Math.round(size / 1024 * 100) / 100}ko`
+}
+
+function formatDimensions (image) {
+  return `${image.width}x${image.height}px`
 }
 
 // widgets.define('local-file-upload', (options) => (el) => {
