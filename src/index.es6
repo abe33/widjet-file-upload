@@ -1,22 +1,15 @@
 import widgets from 'widjet'
-import {getNode, detachNode, when} from 'widjet-utils'
+import {getNode, detachNode, when, merge} from 'widjet-utils'
 import {previewBuilder, disposePreview, getImagePreview, getTextPreview, resetPreviewCache} from './preview'
-
-const filesById = {}
 
 export {getImagePreview, getTextPreview, previewBuilder, disposePreview, resetPreviewCache}
 
 widgets.define('file-upload', (options) => {
-  const wrap = options.wrap || defaultWrap
-  const previewSelector = options.previewSelector || '.preview'
-  const nameMetaSelector = options.nameMetaSelector || '.meta .name'
-  const mimeMetaSelector = options.mimeMetaSelector || '.meta .mime'
-  const dimensionsMetaSelector = options.dimensionsMetaSelector || '.meta .dimensions'
-  const sizeMetaSelector = options.sizeMetaSelector || '.meta .size'
-  const formatSize = options.formatSize || defaultFormatSize
-  const formatDimensions = options.formatDimensions || defaultFormatDimensions
+  const {
+    wrap, previewSelector, nameMetaSelector, mimeMetaSelector, dimensionsMetaSelector, sizeMetaSelector, formatSize, formatDimensions
+  } = merge(defaults, options)
 
-  const getPreview = previewBuilder()
+  const getPreview = previewBuilder(options.previewers)
 
   return (input) => {
     const container = input.parentNode
@@ -53,37 +46,44 @@ widgets.define('file-upload', (options) => {
   }
 })
 
-const defaultWrap = (input) => {
-  const wrapper = getNode(`
-    <div class="image-input">
-      <div class='image-container'>
-        <label></label>
-
-        <div class="preview"></div>
-      </div>
-
-      <progress value="0" min="0" max="100">0%</progress>
-
-      <div class="meta">
-        <div class="name"></div>
-        <div class="mime"></div>
-        <div class="dimensions"></div>
-        <div class="size"></div>
-      </div>
-    </div>
-  `)
-  wrapper.querySelector('label').appendChild(input)
-  return wrapper
-}
+const filesById = {}
 
 const writeText = (node, value) => node && (node.textContent = value)
-
-const defaultFormatDimensions = (image) => `${image.width}x${image.height}px`
 
 const unitPerSize = ['B', 'kB', 'MB', 'GB', 'TB'].map((u, i) => [Math.pow(1024, i + 1), u])
 
 const round = n => (n * 100) / 100
 
-const defaultFormatSize = when(unitPerSize.map(([limit, unit]) =>
-  [n => n < limit, n => [round(n), unit].join('')])
-)
+const defaults = {
+  previewSelector: '.preview',
+  nameMetaSelector: '.meta .name',
+  mimeMetaSelector: '.meta .mime',
+  dimensionsMetaSelector: '.meta .dimensions',
+  sizeMetaSelector: '.meta .size',
+  formatSize: when(unitPerSize.map(([limit, unit]) =>
+    [n => n < limit, n => [round(n), unit].join('')])
+  ),
+  formatDimensions: (image) => `${image.width}x${image.height}px`,
+  wrap: (input) => {
+    const wrapper = getNode(`
+      <div class="image-input">
+        <div class='image-container'>
+          <label></label>
+
+          <div class="preview"></div>
+        </div>
+
+        <progress value="0" min="0" max="100">0%</progress>
+
+        <div class="meta">
+          <div class="name"></div>
+          <div class="mime"></div>
+          <div class="dimensions"></div>
+          <div class="size"></div>
+        </div>
+      </div>
+    `)
+    wrapper.querySelector('label').appendChild(input)
+    return wrapper
+  }
+}
