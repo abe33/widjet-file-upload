@@ -4,7 +4,7 @@ import jsdom from 'mocha-jsdom'
 import widgets from 'widjet'
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 
-import {pickFile, getFile, load} from './helpers'
+import {pickFile, getFile} from './helpers'
 
 import '../src/index'
 import {previewBuilder} from '../src/preview'
@@ -53,7 +53,7 @@ describe('file-upload', () => {
       expect(wrapper.querySelector('.meta .name').textContent).to.eql('foo.jpg')
       expect(wrapper.querySelector('.meta .mime').textContent).to.eql('image/jpeg')
       expect(wrapper.querySelector('.meta .dimensions').textContent).to.eql('0x0px')
-      expect(wrapper.querySelector('.meta .size').textContent).to.eql('0ko')
+      expect(wrapper.querySelector('.meta .size').textContent).to.eql('3B')
     })
 
     describe('changing it again', () => {

@@ -38,7 +38,7 @@ export function getImagePreview ({file, onprogress}) {
   return new Promise((resolve, reject) => {
     const reader = new window.FileReader()
     reader.onload = (e) => resolve(getNode(`<img src="${e.target.result}">`))
-    reader.onerror = (err) => reject(err)
+    reader.onerror = reject
     reader.onprogress = onprogress
     reader.readAsDataURL(file)
   })

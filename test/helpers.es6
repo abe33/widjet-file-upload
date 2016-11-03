@@ -15,7 +15,3 @@ export function pickFile (input, file) {
 export function change (target) {
   target.dispatchEvent(createEvent('Event', 'change'))
 }
-
-export function load (target) {
-  target.dispatchEvent(createEvent('Event', 'load'))
-}
