@@ -40,6 +40,7 @@ widgets.define('file-upload', (options) => {
         writeText(size, formatSize(file.size))
         writeText(name, file.name)
         writeText(mime, file.type)
+        writeText(dimensions, '')
         filesById[input.id] = file
       })
     })
@@ -78,8 +79,8 @@ const defaults = {
         <div class="meta">
           <div class="name"></div>
           <div class="mime"></div>
-          <div class="dimensions"></div>
           <div class="size"></div>
+          <div class="dimensions"></div>
         </div>
       </div>
     `)
