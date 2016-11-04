@@ -52,7 +52,7 @@ describe('file-upload', () => {
 
       expect(wrapper.querySelector('.meta .name').textContent).to.eql('foo.jpg')
       expect(wrapper.querySelector('.meta .mime').textContent).to.eql('image/jpeg')
-      expect(wrapper.querySelector('.meta .dimensions').textContent).to.eql('0x0px')
+      expect(wrapper.querySelector('.meta .dimensions').textContent).to.eql(`${img.width}x${img.height}px`)
       expect(wrapper.querySelector('.meta .size').textContent).to.eql('3B')
     })
 
@@ -137,7 +137,7 @@ describe('file-upload', () => {
 
         expect(wrapper.querySelector('.name').textContent).to.eql('foo.jpg')
         expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg')
-        expect(wrapper.querySelector('.dimensions').textContent).to.eql('0px, 0px')
+        expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.width}px, ${img.height}px`)
         expect(wrapper.querySelector('.size').textContent).to.eql('3o')
       })
     })
