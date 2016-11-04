@@ -1,8 +1,10 @@
 import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
 import widgets from 'widjet'
+import sinon from 'sinon'
 import {getNode} from 'widjet-utils'
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
+import {waitsFor} from 'widjet-test-utils/async'
 
 import {pickFile, getFile} from './helpers'
 
@@ -31,13 +33,16 @@ describe('file-upload', () => {
   })
 
   describe('when an image is picked from the disk', () => {
-    let file
+    let file, spy
 
     beforeEach(() => {
+      spy = sinon.spy()
       file = getFile('foo.jpg', 'image/jpeg')
+      input.addEventListener('preview:ready', spy)
+
       pickFile(input, file)
 
-      return getPreview({file})
+      return getPreview({file}).then((img) => img.onload())
     })
 
     it('generates a preview image', () => {
@@ -45,10 +50,12 @@ describe('file-upload', () => {
       expect(img).not.to.be(null)
     })
 
+    it('emits a preview:ready event', () => {
+      return waitsFor(() => spy.called)
+    })
+
     it('fills the meta div with the preview information', () => {
       const img = wrapper.querySelector('.preview img')
-      // forces call of the dummy image callback since it's not a proper image
-      img.onload()
 
       expect(wrapper.querySelector('.meta .name').textContent).to.eql('foo.jpg')
       expect(wrapper.querySelector('.meta .mime').textContent).to.eql('image/jpeg')

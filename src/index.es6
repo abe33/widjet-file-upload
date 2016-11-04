@@ -42,6 +42,7 @@ widgets.define('file-upload', (options) => {
         writeText(mime, file.type)
         writeText(dimensions, '')
         filesById[input.id] = file
+        widgets.dispatch(input, 'preview:ready')
       })
     })
   }
