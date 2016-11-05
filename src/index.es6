@@ -1,6 +1,6 @@
 import widgets from 'widjet'
 import {DisposableEvent, CompositeDisposable} from 'widjet-disposables'
-import {getNode, detachNode, when, merge} from 'widjet-utils'
+import {getNode, when, merge} from 'widjet-utils'
 import {previewBuilder, disposePreview, getImagePreview, getTextPreview, resetPreviewCache} from './preview'
 
 export {getImagePreview, getTextPreview, previewBuilder, disposePreview, resetPreviewCache}
@@ -68,16 +68,13 @@ widgets.define('file-upload', (options) => {
     }
 
     function resetField () {
-      const previousImage = previewContainer.querySelector('img')
-      if (previousImage) { detachNode(previousImage) }
-
       if (filesById[input.id]) {
         disposePreview(filesById[input.id])
         delete filesById[input.id]
       }
 
       progress && progress.removeAttribute('value')
-
+      previewContainer.innerHTML = ''
       writeText(size, '')
       writeText(name, '')
       writeText(mime, '')
