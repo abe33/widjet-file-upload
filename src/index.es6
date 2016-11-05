@@ -116,7 +116,7 @@ const defaults = {
         <div class='image-container'>
           <label></label>
           <div class="preview"></div>
-          <button type="button"><span>Reset</span></button>
+          <button type="button" tabindex="-1"><span>Reset</span></button>
         </div>
 
         <progress min="0" max="100"></progress>
