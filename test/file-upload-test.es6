@@ -33,6 +33,38 @@ describe('file-upload', () => {
     expect(input).not.to.be(null)
   })
 
+  describe('when a file is already present', () => {
+    let file
+    beforeEach(() => {
+      setPageContent(`<input type="file" name="file">`)
+
+      file = getFile('foo.jpg', 'image/jpeg')
+      input = getTestRoot().querySelector('input[type="file"]')
+
+      pickFile(input, file, false)
+
+      widgets('file-upload', 'input[type="file"]', {on: 'init'})
+
+      wrapper = getTestRoot().querySelector('.image-input')
+
+      return getPreview({file}).then((img) => img.onload())
+    })
+
+    it('places the preview in the corresponding container', () => {
+      const img = wrapper.querySelector('.preview img')
+      expect(img).not.to.be(null)
+    })
+
+    it('fills the meta div with the preview information', () => {
+      const img = wrapper.querySelector('.preview img')
+
+      expect(wrapper.querySelector('.name').textContent).to.eql('foo.jpg')
+      expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg')
+      expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.width}x${img.height}px`)
+      expect(wrapper.querySelector('.size').textContent).to.eql('3B')
+    })
+  })
+
   describe('when an image is picked from the disk', () => {
     let file, spy
 

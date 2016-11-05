@@ -4,12 +4,12 @@ export function getFile (name, type) {
   return new window.File(['foo'], name, {type, lastModified: new Date()})
 }
 
-export function pickFile (input, file) {
+export function pickFile (input, file, changeEvent = true) {
   Object.defineProperty(input, 'files', {
     get: () => file ? [file] : [],
     configurable: true
   })
-  change(input)
+  if (changeEvent) { change(input) }
 }
 
 export function change (target) {

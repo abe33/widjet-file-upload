@@ -36,7 +36,14 @@ widgets.define('file-upload', (options) => {
 
     composite.add(new DisposableEvent(input, 'change', (e) => {
       resetField()
+      createPreview()
+    }))
 
+    createPreview()
+
+    return composite
+
+    function createPreview () {
       const file = input.files[0]
 
       if (file) {
@@ -58,9 +65,7 @@ widgets.define('file-upload', (options) => {
           widgets.dispatch(input, 'preview:ready')
         })
       }
-    }))
-
-    return composite
+    }
 
     function resetField () {
       const previousImage = previewContainer.querySelector('img')
