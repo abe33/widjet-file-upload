@@ -9,10 +9,20 @@ import {click} from 'widjet-test-utils/events'
 
 import {pickFile, getFile} from './helpers'
 
-import '../src/index'
+import {formatSize} from '../src/index'
 import {previewBuilder, getTextPreview} from '../src/preview'
 
 const getPreview = previewBuilder()
+
+describe('formatSize()', () => {
+  it('formats file size using the proper unit', () => {
+    expect(formatSize(54)).to.eql('54B')
+    expect(formatSize(1023)).to.eql('1.02kB')
+    expect(formatSize(2315023)).to.eql('2.31MB')
+    expect(formatSize(7542315023)).to.eql('7.54GB')
+    expect(formatSize(1237542315023)).to.eql('1.23TB')
+  })
+})
 
 describe('file-upload', () => {
   jsdom()

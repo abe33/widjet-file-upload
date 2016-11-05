@@ -92,9 +92,16 @@ const writeText = (node, value) => node && (node.textContent = value)
 
 const writeValue = (node, value) => node && (node.value = value)
 
-const unitPerSize = ['B', 'kB', 'MB', 'GB', 'TB'].map((u, i) => [Math.pow(1024, i + 1), u])
+const unitPerSize = ['B', 'kB', 'MB', 'GB', 'TB'].map((u, i) => [Math.pow(1000, i + 1), u, i === 0 ? 1 : Math.pow(1000, i)])
 
-const round = n => (n * 100) / 100
+const round = n => Math.floor(n * 100) / 100
+
+export const formatSize = when(unitPerSize.map(([limit, unit, divider]) =>
+  [n => n < limit / 2, n => [round(n / divider), unit].join('')])
+)
+
+export const formatDimensions = (image) =>
+  `${image.naturalWidth || image.width}x${image.naturalHeight || image.height}px`
 
 const defaults = {
   previewSelector: '.preview',
@@ -104,10 +111,8 @@ const defaults = {
   progressSelector: 'progress',
   resetButtonSelector: 'button',
   sizeMetaSelector: '.meta .size',
-  formatSize: when(unitPerSize.map(([limit, unit]) =>
-    [n => n < limit, n => [round(n), unit].join('')])
-  ),
-  formatDimensions: (image) => `${image.width}x${image.height}px`,
+  formatSize,
+  formatDimensions,
   wrap: (input) => {
     const wrapper = getNode(`
       <div class="image-input">
