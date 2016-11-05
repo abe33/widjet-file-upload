@@ -6,7 +6,7 @@ export function getFile (name, type) {
 
 export function pickFile (input, file) {
   Object.defineProperty(input, 'files', {
-    get: () => [file],
+    get: () => file ? [file] : [],
     configurable: true
   })
   change(input)

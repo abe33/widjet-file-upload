@@ -5,6 +5,7 @@ import sinon from 'sinon'
 import {getNode} from 'widjet-utils'
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 import {waitsFor} from 'widjet-test-utils/async'
+import {click} from 'widjet-test-utils/events'
 
 import {pickFile, getFile} from './helpers'
 
@@ -41,46 +42,121 @@ describe('file-upload', () => {
       input.addEventListener('preview:ready', spy)
 
       pickFile(input, file)
-
-      return getPreview({file}).then((img) => img.onload())
     })
 
-    it('generates a preview image', () => {
-      const img = wrapper.querySelector('.preview img')
-      expect(img).not.to.be(null)
+    it('adds the loading class on the input container', () => {
+      expect(wrapper.classList.contains('loading')).to.be.ok()
     })
 
-    it('emits a preview:ready event', () => {
-      return waitsFor(() => spy.called)
+    it('resets the progress value', () => {
+      const progress = wrapper.querySelector('progress')
+      expect(progress.value).to.equal(0)
     })
 
-    it('fills the meta div with the preview information', () => {
-      const img = wrapper.querySelector('.preview img')
+    describe('when the preview have been generated', () => {
+      beforeEach(() => getPreview({file}).then((img) => img.onload()))
 
-      expect(wrapper.querySelector('.meta .name').textContent).to.eql('foo.jpg')
-      expect(wrapper.querySelector('.meta .mime').textContent).to.eql('image/jpeg')
-      expect(wrapper.querySelector('.meta .dimensions').textContent).to.eql(`${img.width}x${img.height}px`)
-      expect(wrapper.querySelector('.meta .size').textContent).to.eql('3B')
-    })
-
-    describe('changing it again', () => {
-      let promise, previousFile
-      beforeEach(() => {
-        promise = getPreview({file})
-        previousFile = file
-
-        file = getFile('bar.jpg', 'image/jpeg')
-        pickFile(input, file)
-
-        return getPreview({file})
+      it('has updated the progress using the onprogress event information', () => {
+        const progress = wrapper.querySelector('progress')
+        expect(progress.value).not.to.equal(0)
       })
 
-      it('removes the previous preview image', () => {
-        expect(wrapper.querySelectorAll('.preview img')).to.have.length(1)
+      it('places the preview in the corresponding container', () => {
+        const img = wrapper.querySelector('.preview img')
+        expect(img).not.to.be(null)
       })
 
-      it('clears the previously cached preview promise', () => {
-        expect(getPreview({file: previousFile})).not.to.be(promise)
+      it('removes the loading class from the input container', () => {
+        expect(wrapper.classList.contains('loading')).not.to.be.ok()
+      })
+
+      it('emits a preview:ready event', () => waitsFor(() => spy.called))
+
+      it('fills the meta div with the preview information', () => {
+        const img = wrapper.querySelector('.preview img')
+
+        expect(wrapper.querySelector('.name').textContent).to.eql('foo.jpg')
+        expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg')
+        expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.width}x${img.height}px`)
+        expect(wrapper.querySelector('.size').textContent).to.eql('3B')
+      })
+
+      describe('clicking on the reset button', () => {
+        let promise, previousFile
+
+        beforeEach(() => {
+          promise = getPreview({file})
+          previousFile = file
+
+          const button = wrapper.querySelector('button')
+          click(button)
+        })
+
+        it('resets the input value', () => {
+          expect(input.value).to.eql('')
+        })
+
+        it('removes the previous preview image', () => {
+          expect(wrapper.querySelectorAll('.preview img')).to.have.length(0)
+        })
+
+        it('clears the previously cached preview promise', () => {
+          expect(getPreview({file: previousFile})).not.to.be(promise)
+        })
+
+        it('clears the meta', () => {
+          expect(wrapper.querySelector('.name').textContent).to.eql('')
+          expect(wrapper.querySelector('.mime').textContent).to.eql('')
+          expect(wrapper.querySelector('.dimensions').textContent).to.eql('')
+          expect(wrapper.querySelector('.size').textContent).to.eql('')
+        })
+      })
+
+      describe('changing it again', () => {
+        let promise, previousFile
+
+        beforeEach(() => {
+          promise = getPreview({file})
+          previousFile = file
+        })
+
+        describe('to another file', () => {
+          beforeEach(() => {
+            file = getFile('bar.jpg', 'image/jpeg')
+            pickFile(input, file)
+
+            return getPreview({file})
+          })
+
+          it('removes the previous preview image', () => {
+            expect(wrapper.querySelectorAll('.preview img')).to.have.length(1)
+          })
+
+          it('clears the previously cached preview promise', () => {
+            expect(getPreview({file: previousFile})).not.to.be(promise)
+          })
+        })
+
+        describe('to no file', () => {
+          beforeEach(() => {
+            pickFile(input)
+          })
+
+          it('removes the previous preview image', () => {
+            expect(wrapper.querySelectorAll('.preview img')).to.have.length(0)
+          })
+
+          it('clears the previously cached preview promise', () => {
+            expect(getPreview({file: previousFile})).not.to.be(promise)
+          })
+
+          it('clears the meta', () => {
+            expect(wrapper.querySelector('.name').textContent).to.eql('')
+            expect(wrapper.querySelector('.mime').textContent).to.eql('')
+            expect(wrapper.querySelector('.dimensions').textContent).to.eql('')
+            expect(wrapper.querySelector('.size').textContent).to.eql('')
+          })
+        })
       })
     })
   })
