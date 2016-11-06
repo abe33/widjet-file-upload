@@ -14,5 +14,5 @@ npm install --save widjet-file-upload
 import widgets from 'widjet'
 import 'widjet-file-upload'
 
-widgets('file-upload', 'input[type="file"]', {on: 'load'})
+widgets('file-preview', 'input[type="file"]', {on: 'load'})
 ```

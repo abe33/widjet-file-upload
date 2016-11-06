@@ -5,7 +5,7 @@ import {previewBuilder, disposePreview, getImagePreview, getTextPreview, resetPr
 
 export {getImagePreview, getTextPreview, previewBuilder, disposePreview, resetPreviewCache}
 
-widgets.define('file-upload', (options) => {
+widgets.define('file-preview', (options) => {
   const {
     wrap, previewSelector, nameMetaSelector, mimeMetaSelector, dimensionsMetaSelector, sizeMetaSelector, progressSelector, resetButtonSelector, formatSize, formatDimensions
   } = merge(defaults, options)

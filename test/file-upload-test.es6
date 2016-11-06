@@ -24,7 +24,7 @@ describe('formatSize()', () => {
   })
 })
 
-describe('file-upload', () => {
+describe('file-preview', () => {
   jsdom()
 
   let wrapper, input
@@ -32,7 +32,7 @@ describe('file-upload', () => {
   beforeEach(() => {
     setPageContent(`<input type="file" name="file">`)
 
-    widgets('file-upload', 'input[type="file"]', {on: 'init'})
+    widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
     wrapper = getTestRoot().querySelector('.image-input')
     input = wrapper.querySelector('input[type="file"]')
@@ -53,7 +53,7 @@ describe('file-upload', () => {
 
       pickFile(input, file, false)
 
-      widgets('file-upload', 'input[type="file"]', {on: 'init'})
+      widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
       wrapper = getTestRoot().querySelector('.image-input')
 
@@ -87,7 +87,7 @@ describe('file-upload', () => {
         input = getTestRoot().querySelector('input[type="file"]')
         input.addEventListener('preview:ready', spy)
 
-        widgets('file-upload', 'input[type="file"]', {on: 'init'})
+        widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
         wrapper = getTestRoot().querySelector('.image-input')
 
@@ -243,7 +243,7 @@ describe('file-upload', () => {
     beforeEach(() => {
       setPageContent(`<input type="file" name="file">`)
 
-      widgets('file-upload', 'input[type="file"]', {
+      widgets('file-preview', 'input[type="file"]', {
         on: 'init',
         previewSelector: '.preview',
         nameMetaSelector: '.name',
