@@ -39,32 +39,55 @@ widgets.define('file-upload', (options) => {
       createPreview()
     }))
 
-    createPreview()
+    if (input.files.length) {
+      createPreview()
+    } else if (input.hasAttribute('data-file')) {
+      createPreviewFromURL()
+    }
 
     return composite
 
     function createPreview () {
       const file = input.files[0]
+      file && createFilePreview(file)
+    }
 
-      if (file) {
-        wrapper.classList.add('loading')
-        writeValue(progress, 0)
-
-        getPreview({file, onprogress}).then((preview) => {
-          preview.onload = () =>
-            writeText(dimensions, formatDimensions(preview))
-          previewContainer.appendChild(preview)
-
-          writeText(size, formatSize(file.size))
-          writeText(name, file.name)
-          writeText(mime, file.type)
-          writeText(dimensions, '')
-
-          filesById[input.id] = file
-          wrapper.classList.remove('loading')
-          widgets.dispatch(input, 'preview:ready')
-        })
+    function createPreviewFromURL () {
+      wrapper.classList.add('loading')
+      const url = new window.URL(input.getAttribute('data-file'))
+      const req = new window.XMLHttpRequest()
+      req.responseType = 'arraybuffer'
+      req.onprogress = onprogress
+      req.onload = (e) => {
+        wrapper.classList.remove('loading')
+        const type = req.getResponseHeader('Content-Type')
+        const lastModified = new Date(req.getResponseHeader('Last-Modified'))
+        const parts = [new window.Blob([req.response], {type})]
+        const file = new window.File(parts, url.pathname.replace('/', ''), {type, lastModified})
+        createFilePreview(file)
       }
+      req.open('GET', url.href)
+      req.send()
+    }
+
+    function createFilePreview (file) {
+      wrapper.classList.add('loading')
+      writeValue(progress, 0)
+
+      return getPreview({file, onprogress}).then((preview) => {
+        preview.onload = () =>
+          writeText(dimensions, formatDimensions(preview))
+        previewContainer.appendChild(preview)
+
+        writeText(size, formatSize(file.size))
+        writeText(name, file.name)
+        writeText(mime, file.type)
+        writeText(dimensions, '')
+
+        filesById[input.id] = file
+        wrapper.classList.remove('loading')
+        widgets.dispatch(input, 'preview:ready')
+      })
     }
 
     function resetField () {

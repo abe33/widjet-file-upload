@@ -75,6 +75,42 @@ describe('file-upload', () => {
     })
   })
 
+  describe('when the input has a data-file attribute', () => {
+    let spy, url
+    describe('that points to an image', () => {
+      beforeEach(() => {
+        url = new window.URL('https://images.unsplash.com/photo-1425136738262-212551713a58?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&h=600&fit=crop&s=f57c8ae7d8338c543330b785fa8a513b')
+
+        spy = sinon.spy()
+        setPageContent(`<input type="file" name="file" data-file="${url.href}">`)
+
+        input = getTestRoot().querySelector('input[type="file"]')
+        input.addEventListener('preview:ready', spy)
+
+        widgets('file-upload', 'input[type="file"]', {on: 'init'})
+
+        wrapper = getTestRoot().querySelector('.image-input')
+
+        return waitsFor(() => spy.called)
+      })
+
+      it('creates an image tag with the provided url', () => {
+        const img = wrapper.querySelector('.preview img')
+        expect(img).not.to.be(null)
+      })
+
+      it('fills the meta div with the image information', () => {
+        const img = wrapper.querySelector('.preview img')
+        img.onload()
+
+        expect(wrapper.querySelector('.name').textContent).to.eql(url.pathname.replace('/', ''))
+        expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg')
+        expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.naturalWidth}x${img.naturalHeight}px`)
+        expect(wrapper.querySelector('.size').textContent).to.eql('184.71kB')
+      })
+    })
+  })
+
   describe('when an image is picked from the disk', () => {
     let file, spy
 
