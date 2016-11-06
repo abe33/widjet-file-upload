@@ -9,7 +9,7 @@ import {click} from 'widjet-test-utils/events'
 
 import {pickFile, getFile} from './helpers'
 
-import {formatSize} from '../src/index'
+import {formatSize} from '../src/file-preview'
 import {previewBuilder, getTextPreview} from '../src/preview'
 
 const getPreview = previewBuilder()
@@ -34,7 +34,7 @@ describe('file-preview', () => {
 
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
-    wrapper = getTestRoot().querySelector('.image-input')
+    wrapper = getTestRoot().querySelector('.file-input')
     input = wrapper.querySelector('input[type="file"]')
   })
 
@@ -55,7 +55,7 @@ describe('file-preview', () => {
 
       widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
-      wrapper = getTestRoot().querySelector('.image-input')
+      wrapper = getTestRoot().querySelector('.file-input')
 
       return getPreview({file}).then((img) => img.onload())
     })
@@ -89,7 +89,7 @@ describe('file-preview', () => {
 
         widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
-        wrapper = getTestRoot().querySelector('.image-input')
+        wrapper = getTestRoot().querySelector('.file-input')
 
         return waitsFor(() => spy.called)
       })
