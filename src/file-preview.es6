@@ -1,8 +1,8 @@
 import widgets from 'widjet'
-import {previewBuilder, disposePreview} from './preview'
-
 import {DisposableEvent, CompositeDisposable} from 'widjet-disposables'
-import {getNode, when, merge} from 'widjet-utils'
+import {getNode, when, merge, last} from 'widjet-utils'
+
+import {previewBuilder, disposePreview} from './preview'
 
 widgets.define('file-preview', (options) => {
   const {
@@ -62,7 +62,7 @@ widgets.define('file-preview', (options) => {
         const type = req.getResponseHeader('Content-Type')
         const lastModified = new Date(req.getResponseHeader('Last-Modified'))
         const parts = [new window.Blob([req.response], {type})]
-        const file = new window.File(parts, url.pathname.replace('/', ''), {type, lastModified})
+        const file = new window.File(parts, last(url.pathname.split('/')), {type, lastModified})
         createFilePreview(file)
       }
       req.open('GET', url.href)

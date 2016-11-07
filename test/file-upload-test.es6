@@ -2,7 +2,7 @@ import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
 import widgets from 'widjet'
 import sinon from 'sinon'
-import {getNode} from 'widjet-utils'
+import {getNode, last} from 'widjet-utils'
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 import {waitsFor} from 'widjet-test-utils/async'
 import {click} from 'widjet-test-utils/events'
@@ -77,9 +77,10 @@ describe('file-preview', () => {
 
   describe('when the input has a data-file attribute', () => {
     let spy, url
+
     describe('that points to an image', () => {
       beforeEach(() => {
-        url = new window.URL('https://images.unsplash.com/photo-1425136738262-212551713a58?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&h=600&fit=crop&s=f57c8ae7d8338c543330b785fa8a513b')
+        url = new window.URL('http://abe33.github.io/atom-pigments/project-settings.png')
 
         spy = sinon.spy()
         setPageContent(`<input type="file" name="file" data-file="${url.href}">`)
@@ -91,7 +92,7 @@ describe('file-preview', () => {
 
         wrapper = getTestRoot().querySelector('.file-input')
 
-        return waitsFor(() => spy.called)
+        return waitsFor('preview ready', () => spy.called)
       })
 
       it('creates an image tag with the provided url', () => {
@@ -101,12 +102,13 @@ describe('file-preview', () => {
 
       it('fills the meta div with the image information', () => {
         const img = wrapper.querySelector('.preview img')
+
         img.onload()
 
-        expect(wrapper.querySelector('.name').textContent).to.eql(url.pathname.replace('/', ''))
-        expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg')
+        expect(wrapper.querySelector('.name').textContent).to.eql(last(url.pathname.split('/')))
+        expect(wrapper.querySelector('.mime').textContent).to.eql('image/png')
         expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.naturalWidth}x${img.naturalHeight}px`)
-        expect(wrapper.querySelector('.size').textContent).to.eql('184.71kB')
+        expect(wrapper.querySelector('.size').textContent).to.eql('68.12kB')
       })
     })
   })
