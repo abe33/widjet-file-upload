@@ -1,8 +1,8 @@
 import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
-import sinon from 'sinon'
 
 import Version from '../src/version'
+import {withFakeContext} from './helpers'
 
 const getImage = (width, height) => {
   const image = document.createElement('img')
@@ -16,19 +16,12 @@ const getImage = (width, height) => {
 describe('Version', () => {
   jsdom()
 
-  let version, safGetContext, image, canvas, context
+  let version, image, canvas, context
+
+  withFakeContext()
 
   beforeEach(() => {
     version = new Version('small', [200, 150])
-    const FakeContext = {drawImage: sinon.spy()}
-
-    canvas = document.createElement('canvas')
-    safGetContext = window.HTMLCanvasElement.prototype.getContext
-    window.HTMLCanvasElement.prototype.getContext = () => FakeContext
-  })
-
-  afterEach(() => {
-    window.HTMLCanvasElement.prototype.getContext = safGetContext
   })
 
   describe('#getVersion()', () => {

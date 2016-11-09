@@ -7,12 +7,13 @@ import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 
 import '../src/index'
 
-import {pickFile, getFile} from './helpers'
+import {withFakeContext, pickFile, getFile} from './helpers'
 
 describe('versions-editor', () => {
   jsdom()
 
   let wrapper, input, versionsContainer, spy
+  withFakeContext()
 
   beforeEach(() => {
     const versions = {
@@ -28,7 +29,9 @@ describe('versions-editor', () => {
     `)
 
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
-    widgets('versions-editor', 'input[type="file"]', {on: 'init'})
+    widgets('versions-editor', 'input[type="file"][data-versions]', {
+      on: 'init'
+    })
 
     wrapper = getTestRoot().querySelector('.file-input')
     input = wrapper.querySelector('input[type="file"]')
@@ -50,6 +53,11 @@ describe('versions-editor', () => {
 
     it('appends a slot for each version defined on the input', () => {
       const versions = versionsContainer.querySelectorAll('.version')
+      expect(versions).to.have.length(3)
+    })
+
+    it('appends a canvas corresponding to each version', () => {
+      const versions = versionsContainer.querySelectorAll('canvas')
       expect(versions).to.have.length(3)
     })
   })
