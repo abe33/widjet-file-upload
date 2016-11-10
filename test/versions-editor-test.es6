@@ -16,6 +16,11 @@ describe('versions-editor', () => {
 
   let wrapper, input, versionsContainer, loadedSpy
 
+  const spyOnLoad = () => {
+    loadedSpy = sinon.spy()
+    getTestRoot().addEventListener('preview:loaded', loadedSpy)
+  }
+
   beforeEach(() => {
     const versions = {
       small: [240, 180],
@@ -34,8 +39,7 @@ describe('versions-editor', () => {
       on: 'init'
     })
 
-    loadedSpy = sinon.spy()
-    getTestRoot().addEventListener('preview:loaded', loadedSpy)
+    spyOnLoad()
 
     wrapper = getTestRoot().querySelector('.file-input')
     input = wrapper.querySelector('input[type="file"]')
@@ -62,6 +66,22 @@ describe('versions-editor', () => {
     it('appends a canvas corresponding to each version', () => {
       const versions = versionsContainer.querySelectorAll('canvas')
       expect(versions).to.have.length(3)
+    })
+
+    describe('then changed', () => {
+      beforeEach(() => {
+        const file = getFile('bar.jpg', 'image/jpeg')
+        pickFile(input, file)
+
+        spyOnLoad()
+
+        return waitsFor('preview loaded', () => loadedSpy.called)
+      })
+
+      it('removes the previous versions', () => {
+        const versions = versionsContainer.querySelectorAll('canvas')
+        expect(versions).to.have.length(3)
+      })
     })
   })
 })

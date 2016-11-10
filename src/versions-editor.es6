@@ -17,6 +17,7 @@ widgets.define('versions-editor', (options) => (input) => {
 
   input.addEventListener('preview:loaded', () => {
     const img = container.querySelector('img')
+    versionsContainer.innerHTML = ''
     for (let versionName in versions) {
       const version = versions[versionName]
       const canvas = version.getVersion(img)
