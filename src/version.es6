@@ -18,15 +18,22 @@ export default class Version {
   }
 
   getVersion (image) {
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-
-    canvas.width = this.width
-    canvas.height = this.height
+    const [canvas, context] = this.getCanvas()
     this.box
       ? context.drawImage(image, ...this.box.concat(this.targetBox))
       : context.drawImage(image, ...this.getDefaultBox(image))
     return canvas
+  }
+
+  getCanvas () {
+    if (!this.canvas) {
+      this.canvas = document.createElement('canvas')
+      this.context = this.canvas.getContext('2d')
+
+      this.canvas.width = this.width
+      this.canvas.height = this.height
+    }
+    return [this.canvas, this.context]
   }
 
   getDefaultBox (image) {
