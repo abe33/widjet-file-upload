@@ -1,19 +1,20 @@
 import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
-import widgets from 'widjet'
 import sinon from 'sinon'
-import {waitsFor} from 'widjet-test-utils/async'
+import widgets from 'widjet'
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
+import {waitsFor} from 'widjet-test-utils/async'
 
 import '../src/index'
 
-import {withFakeContext, pickFile, getFile} from './helpers'
+import {triggerImageLoad, withFakeContext, pickFile, getFile} from './helpers'
 
 describe('versions-editor', () => {
   jsdom()
-
-  let wrapper, input, versionsContainer, spy
   withFakeContext()
+  triggerImageLoad()
+
+  let wrapper, input, versionsContainer, loadedSpy
 
   beforeEach(() => {
     const versions = {
@@ -33,6 +34,9 @@ describe('versions-editor', () => {
       on: 'init'
     })
 
+    loadedSpy = sinon.spy()
+    getTestRoot().addEventListener('preview:loaded', loadedSpy)
+
     wrapper = getTestRoot().querySelector('.file-input')
     input = wrapper.querySelector('input[type="file"]')
     versionsContainer = wrapper.querySelector('.versions')
@@ -44,11 +48,10 @@ describe('versions-editor', () => {
 
   describe('when an image is picked', () => {
     beforeEach(() => {
-      spy = sinon.spy()
-      input.addEventListener('preview:ready', spy)
-      pickFile(input, getFile('foo.jpg', 'image/jpeg'))
+      const file = getFile('foo.jpg', 'image/jpeg')
+      pickFile(input, file)
 
-      return waitsFor(() => spy.called)
+      return waitsFor('preview loaded', () => loadedSpy.called)
     })
 
     it('appends a slot for each version defined on the input', () => {

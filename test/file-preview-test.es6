@@ -7,7 +7,7 @@ import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 import {waitsFor} from 'widjet-test-utils/async'
 import {click} from 'widjet-test-utils/events'
 
-import {pickFile, getFile} from './helpers'
+import {pickFile, getFile, triggerImageLoad} from './helpers'
 
 import {formatSize} from '../src/file-preview'
 import {previewBuilder, getTextPreview} from '../src/preview'
@@ -26,8 +26,9 @@ describe('formatSize()', () => {
 
 describe('file-preview', () => {
   jsdom()
+  triggerImageLoad()
 
-  let wrapper, input
+  let wrapper, input, loadedSpy
 
   beforeEach(() => {
     setPageContent(`<input type="file" name="file">`)
@@ -36,6 +37,8 @@ describe('file-preview', () => {
 
     wrapper = getTestRoot().querySelector('.file-input')
     input = wrapper.querySelector('input[type="file"]')
+    loadedSpy = sinon.spy()
+    getTestRoot().addEventListener('preview:loaded', loadedSpy)
   })
 
   it('wraps the input into a div', () => {
@@ -57,7 +60,7 @@ describe('file-preview', () => {
 
       wrapper = getTestRoot().querySelector('.file-input')
 
-      return getPreview({file}).then((img) => img.onload())
+      return waitsFor('preview loaded', () => loadedSpy.called)
     })
 
     it('places the preview in the corresponding container', () => {
@@ -76,23 +79,23 @@ describe('file-preview', () => {
   })
 
   describe('when the input has a data-file attribute', () => {
-    let spy, url
+    let url
 
     describe('that points to an image', () => {
       beforeEach(() => {
         url = new window.URL('http://abe33.github.io/atom-pigments/project-settings.png')
 
-        spy = sinon.spy()
+        loadedSpy = sinon.spy()
         setPageContent(`<input type="file" name="file" data-file="${url.href}">`)
 
         input = getTestRoot().querySelector('input[type="file"]')
-        input.addEventListener('preview:ready', spy)
+        input.addEventListener('preview:loaded', loadedSpy)
 
         widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
         wrapper = getTestRoot().querySelector('.file-input')
 
-        return waitsFor('preview ready', () => spy.called)
+        return waitsFor('preview loaded', () => loadedSpy.called)
       })
 
       it('creates an image tag with the provided url', () => {
@@ -103,8 +106,6 @@ describe('file-preview', () => {
       it('fills the meta div with the image information', () => {
         const img = wrapper.querySelector('.preview img')
 
-        img.onload()
-
         expect(wrapper.querySelector('.name').textContent).to.eql(last(url.pathname.split('/')))
         expect(wrapper.querySelector('.mime').textContent).to.eql('image/png')
         expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.naturalWidth}x${img.naturalHeight}px`)
@@ -114,12 +115,10 @@ describe('file-preview', () => {
   })
 
   describe('when an image is picked from the disk', () => {
-    let file, spy
+    let file
 
     beforeEach(() => {
-      spy = sinon.spy()
       file = getFile('foo.jpg', 'image/jpeg')
-      input.addEventListener('preview:ready', spy)
 
       pickFile(input, file)
     })
@@ -134,7 +133,7 @@ describe('file-preview', () => {
     })
 
     describe('when the preview have been generated', () => {
-      beforeEach(() => getPreview({file}).then((img) => img.onload()))
+      beforeEach(() => waitsFor('preview loaded', () => loadedSpy.called))
 
       it('has updated the progress using the onprogress event information', () => {
         const progress = wrapper.querySelector('progress')
@@ -149,8 +148,6 @@ describe('file-preview', () => {
       it('removes the loading class from the input container', () => {
         expect(wrapper.classList.contains('loading')).not.to.be.ok()
       })
-
-      it('emits a preview:ready event', () => waitsFor(() => spy.called))
 
       it('fills the meta div with the preview information', () => {
         const img = wrapper.querySelector('.preview img')
@@ -205,7 +202,7 @@ describe('file-preview', () => {
             file = getFile('bar.jpg', 'image/jpeg')
             pickFile(input, file)
 
-            return getPreview({file})
+            return waitsFor('preview loaded', () => loadedSpy.called)
           })
 
           it('removes the previous preview image', () => {

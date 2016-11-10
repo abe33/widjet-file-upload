@@ -74,19 +74,25 @@ widgets.define('file-preview', (options) => {
       writeValue(progress, 0)
 
       return getPreview({file, onprogress}).then((preview) => {
-        preview.onload = () =>
-          writeText(dimensions, formatDimensions(preview))
+        preview.nodeName === 'IMG'
+          ? preview.onload = () => {
+            writeText(dimensions, formatDimensions(preview))
+            previewLoaded(file)
+          }
+          : previewLoaded(file)
+
         previewContainer.appendChild(preview)
-
-        writeText(size, formatSize(file.size))
-        writeText(name, file.name)
-        writeText(mime, file.type)
-        writeText(dimensions, '')
-
         filesById[input.id] = file
-        wrapper.classList.remove('loading')
         widgets.dispatch(input, 'preview:ready')
       })
+    }
+
+    function previewLoaded (file) {
+      writeText(size, formatSize(file.size))
+      writeText(name, file.name)
+      writeText(mime, file.type)
+      wrapper.classList.remove('loading')
+      widgets.dispatch(input, 'preview:loaded')
     }
 
     function resetField () {
