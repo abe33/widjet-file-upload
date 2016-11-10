@@ -84,4 +84,63 @@ describe('versions-editor', () => {
       })
     })
   })
+
+  describe('when the input has a data-version-boxes attributes', () => {
+    beforeEach(() => {
+      const versions = {
+        small: [240, 180],
+        medium: [640, 480],
+        wide: [640, 360]
+      }
+
+      const versionBoxes = {
+        small: [100, 100, 480, 260],
+        medium: [20, 30, 320, 240],
+        wide: [50, 50, 1280, 720]
+      }
+
+      setPageContent(`
+        <input type="file"
+               name="file"
+               data-versions='${JSON.stringify(versions)}'
+               data-version-boxes='${JSON.stringify(versionBoxes)}'>
+      `)
+
+      widgets('file-preview', 'input[type="file"]', {on: 'init'})
+      widgets('versions-editor', 'input[type="file"][data-versions]', {
+        on: 'init'
+      })
+
+      spyOnLoad()
+
+      wrapper = getTestRoot().querySelector('.file-input')
+      input = wrapper.querySelector('input[type="file"]')
+      versionsContainer = wrapper.querySelector('.versions')
+    })
+
+    it('registers the passed-in box with the corresponding version', () => {
+      const widget = widgets.widgetsFor(input, 'versions-editor')
+      expect(widget.versions.small.box).to.eql([100, 100, 480, 260])
+      expect(widget.versions.medium.box).to.eql([20, 30, 320, 240])
+      expect(widget.versions.wide.box).to.eql([50, 50, 1280, 720])
+    })
+
+    describe('then picking a file', () => {
+      beforeEach(() => {
+        const file = getFile('bar.jpg', 'image/jpeg')
+        pickFile(input, file)
+
+        spyOnLoad()
+
+        return waitsFor('preview loaded', () => loadedSpy.called)
+      })
+
+      it('removes the previous version boxes', () => {
+        const widget = widgets.widgetsFor(input, 'versions-editor')
+        expect(widget.versions.small.box).to.be(undefined)
+        expect(widget.versions.medium.box).to.be(undefined)
+        expect(widget.versions.wide.box).to.be(undefined)
+      })
+    })
+  })
 })
