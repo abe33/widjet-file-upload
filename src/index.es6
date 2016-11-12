@@ -1,5 +1,5 @@
 import './file-preview'
-import './versions-editor'
+import './file-versions'
 
 import {previewBuilder, disposePreview, getImagePreview, getTextPreview, resetPreviewCache} from './preview'
 

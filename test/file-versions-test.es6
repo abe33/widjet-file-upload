@@ -9,7 +9,7 @@ import '../src/index'
 
 import {triggerImageLoad, withFakeContext, pickFile, getFile} from './helpers'
 
-describe('versions-editor', () => {
+describe('file-versions', () => {
   jsdom()
   withFakeContext()
   triggerImageLoad()
@@ -35,7 +35,7 @@ describe('versions-editor', () => {
     `)
 
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
-    widgets('versions-editor', 'input[type="file"][data-versions]', {
+    widgets('file-versions', 'input[type="file"][data-versions]', {
       on: 'init'
     })
 
@@ -82,6 +82,22 @@ describe('versions-editor', () => {
         const versions = versionsContainer.querySelectorAll('canvas')
         expect(versions).to.have.length(3)
       })
+
+      describe('to a file that is not an image', () => {
+        beforeEach(() => {
+          const file = getFile('foo.pdf', 'application/pdf')
+          pickFile(input, file)
+
+          spyOnLoad()
+
+          return waitsFor('preview loaded', () => loadedSpy.called)
+        })
+
+        it('removes the previous versions', () => {
+          const versions = versionsContainer.querySelectorAll('canvas')
+          expect(versions).to.have.length(0)
+        })
+      })
     })
   })
 
@@ -107,7 +123,7 @@ describe('versions-editor', () => {
       `)
 
       widgets('file-preview', 'input[type="file"]', {on: 'init'})
-      widgets('versions-editor', 'input[type="file"][data-versions]', {
+      widgets('file-versions', 'input[type="file"][data-versions]', {
         on: 'init'
       })
 
@@ -119,7 +135,7 @@ describe('versions-editor', () => {
     })
 
     it('registers the passed-in box with the corresponding version', () => {
-      const widget = widgets.widgetsFor(input, 'versions-editor')
+      const widget = widgets.widgetsFor(input, 'file-versions')
       expect(widget.versions.small.box).to.eql([100, 100, 480, 260])
       expect(widget.versions.medium.box).to.eql([20, 30, 320, 240])
       expect(widget.versions.wide.box).to.eql([50, 50, 1280, 720])
@@ -136,7 +152,7 @@ describe('versions-editor', () => {
       })
 
       it('removes the previous version boxes', () => {
-        const widget = widgets.widgetsFor(input, 'versions-editor')
+        const widget = widgets.widgetsFor(input, 'file-versions')
         expect(widget.versions.small.box).to.be(undefined)
         expect(widget.versions.medium.box).to.be(undefined)
         expect(widget.versions.wide.box).to.be(undefined)
