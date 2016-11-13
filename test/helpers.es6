@@ -15,6 +15,15 @@ export function pickFile (input, file, changeEvent = true) {
   if (changeEvent) { change(input) }
 }
 
+export function getImage (width, height, screenWidth = width, screenHeight = height) {
+  const image = document.createElement('img')
+  Object.defineProperty(image, 'naturalWidth', { get: () => width })
+  Object.defineProperty(image, 'naturalHeight', { get: () => height })
+  image.width = screenWidth
+  image.height = screenHeight
+  return image
+}
+
 export function change (target) {
   target.dispatchEvent(createEvent('Event', 'change'))
 }

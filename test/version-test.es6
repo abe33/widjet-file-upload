@@ -2,16 +2,7 @@ import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
 
 import Version from '../src/version'
-import {withFakeContext} from './helpers'
-
-const getImage = (width, height) => {
-  const image = document.createElement('img')
-  Object.defineProperty(image, 'naturalWidth', { get: () => width })
-  Object.defineProperty(image, 'naturalHeight', { get: () => height })
-  image.width = width
-  image.height = height
-  return image
-}
+import {withFakeContext, getImage} from './helpers'
 
 describe('Version', () => {
   jsdom()

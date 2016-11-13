@@ -19,9 +19,7 @@ export default class Version {
 
   getVersion (image) {
     const [canvas, context] = this.getCanvas()
-    this.box
-      ? context.drawImage(image, ...this.box.concat(this.targetBox))
-      : context.drawImage(image, ...this.getDefaultBox(image))
+    context.drawImage(image, ...this.getBox(image))
     return canvas
   }
 
@@ -34,6 +32,12 @@ export default class Version {
       this.canvas.height = this.height
     }
     return [this.canvas, this.context]
+  }
+
+  getBox (image) {
+    return this.box
+      ? this.box.concat(this.targetBox)
+      : this.getDefaultBox(image)
   }
 
   getDefaultBox (image) {
