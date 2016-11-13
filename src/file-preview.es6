@@ -81,7 +81,7 @@ widgets.define('file-preview', (options) => {
           }
           : previewLoaded(file)
 
-        previewContainer.appendChild(preview)
+        if (preview) { previewContainer.appendChild(preview) }
         filesById[input.id] = file
         widgets.dispatch(input, 'preview:ready')
       })
