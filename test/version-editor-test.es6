@@ -60,17 +60,31 @@ describe('VersionEditor', () => {
       handle = editor.element.querySelector('.drag-box')
 
       mousedown(handle, {x: 200, y: 200})
-      mousemove(handle, {x: 300, y: 300})
+    })
+
+    afterEach(() => {
       mouseup(handle, {x: 300, y: 300})
     })
 
     it('moves the drag box inside the image bounds', () => {
       const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 300, y: 300})
       expect(box.getBoundingClientRect()).to.eql({
         top: 0,
         left: 200,
         bottom: 400,
         right: 600,
+        width: 400,
+        height: 400
+      })
+
+      mousemove(handle, {x: -300, y: -100})
+      expect(box.getBoundingClientRect()).to.eql({
+        top: 0,
+        left: 0,
+        bottom: 400,
+        right: 400,
         width: 400,
         height: 400
       })
