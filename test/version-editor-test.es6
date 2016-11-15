@@ -139,4 +139,38 @@ describe('VersionEditor', () => {
       })
     })
   })
+
+  describe('when the image has a portrait orientation', () => {
+    let otherHandle
+
+    beforeEach(() => {
+      img = getImage(600, 900, 400, 600)
+      version = new Version('dummy', [200, 200])
+      editor = new VersionEditor(img, version)
+
+      getTestRoot().appendChild(editor.element)
+
+      otherHandle = editor.element.querySelector('.top-left-handle')
+
+      mousedown(otherHandle, {x: 0, y: 100})
+    })
+
+    afterEach(() => {
+      mouseup(otherHandle)
+    })
+
+    it('locks the width of the version box', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(otherHandle, {x: -100, y: 120})
+      expect(box.getBoundingClientRect()).to.eql({
+        top: 100,
+        left: 0,
+        bottom: 500,
+        right: 400,
+        width: 400,
+        height: 400
+      })
+    })
+  })
 })

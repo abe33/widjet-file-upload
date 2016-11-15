@@ -43,11 +43,20 @@ export default class VersionEditor {
 
   boxToPreview (boxData) {
     const scale = this.source.width / this.source.naturalWidth
+    this.updateBox(
+      boxData[0] * scale,
+      boxData[1] * scale,
+      boxData[2] * scale,
+      boxData[3] * scale
+    )
+  }
+
+  updateBox (left, top, width, height) {
     this.box.style.cssText = `
-      left: ${boxData[0] * scale}px;
-      top: ${boxData[1] * scale}px;
-      width: ${boxData[2] * scale}px;
-      height: ${boxData[3] * scale}px;
+      left: ${px(left)};
+      top: ${px(top)};
+      width: ${px(width)};
+      height: ${px(height)};
     `
   }
 
@@ -71,18 +80,31 @@ export default class VersionEditor {
       let newWidth = bb.right - x
       let newHeight = newWidth / ratio
 
-      if (newHeight > b.height) {
-        newHeight = b.height
-        newWidth = newHeight * ratio
-      }
+      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
 
-      this.box.style.cssText = `
-        left: ${px(clamp(bb.right - newWidth, b.left, b.right - hb.width))};
-        top: ${px(clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height))};
-        width: ${px(newWidth)};
-        height: ${px(newHeight)};
-      `
+      this.updateBox(
+        clamp(bb.right - newWidth, b.left, b.right - hb.width),
+        clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height),
+        newWidth,
+        newHeight
+      )
     })
+  }
+
+  contraintBoxSize ([width, height], bounds) {
+    const ratio = this.version.getRatio()
+
+    if (width > bounds.width) {
+      width = bounds.width
+      height = width / ratio
+    }
+
+    if (height > bounds.height) {
+      height = bounds.height
+      width = height * ratio
+    }
+
+    return [width, height]
   }
 
   dragGesture (target, handler) {
