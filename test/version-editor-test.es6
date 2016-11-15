@@ -56,14 +56,7 @@ describe('VersionEditor', () => {
 
   it('appends a div figuring the crop box', () => {
     const box = editor.element.querySelector('.version-box')
-    expect(box.getBoundingClientRect()).to.eql({
-      top: 0,
-      left: 100,
-      bottom: 400,
-      right: 500,
-      width: 400,
-      height: 400
-    })
+    expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
   })
 
   describe('dragging the box', () => {
@@ -82,24 +75,10 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 300, y: 300})
-      expect(box.getBoundingClientRect()).to.eql({
-        top: 0,
-        left: 200,
-        bottom: 400,
-        right: 600,
-        width: 400,
-        height: 400
-      })
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 200, 400, 400))
 
       mousemove(handle, {x: -300, y: -100})
-      expect(box.getBoundingClientRect()).to.eql({
-        top: 0,
-        left: 0,
-        bottom: 400,
-        right: 400,
-        width: 400,
-        height: 400
-      })
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 0, 400, 400))
     })
   })
 
@@ -119,57 +98,186 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 150, y: 20})
-      expect(box.getBoundingClientRect()).to.eql({
-        top: 50,
-        left: 150,
-        bottom: 400,
-        right: 500,
-        width: 350,
-        height: 350
-      })
+      expect(box.getBoundingClientRect()).to.eql(getBox(50, 150, 350, 350))
 
       mousemove(handle, {x: 50, y: 20})
-      expect(box.getBoundingClientRect()).to.eql({
-        top: 0,
-        left: 100,
-        bottom: 400,
-        right: 500,
-        width: 400,
-        height: 400
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+    })
+
+    describe('when the image has a portrait orientation', () => {
+      let otherHandle
+
+      beforeEach(() => {
+        img = getImage(600, 900, 400, 600)
+        version = new Version('dummy', [200, 200])
+        editor = new VersionEditor(img, version)
+
+        getTestRoot().appendChild(editor.element)
+
+        otherHandle = editor.element.querySelector('.top-left-handle')
+
+        mousedown(otherHandle, {x: 0, y: 100})
+      })
+
+      afterEach(() => {
+        mouseup(otherHandle)
+      })
+
+      it('locks the width of the version box', () => {
+        const box = editor.element.querySelector('.version-box')
+
+        mousemove(otherHandle, {x: -100, y: 120})
+        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
       })
     })
   })
 
-  describe('when the image has a portrait orientation', () => {
-    let otherHandle
-
+  describe('dragging the top right handle', () => {
+    let handle
     beforeEach(() => {
-      img = getImage(600, 900, 400, 600)
-      version = new Version('dummy', [200, 200])
-      editor = new VersionEditor(img, version)
+      handle = editor.element.querySelector('.top-right-handle')
 
-      getTestRoot().appendChild(editor.element)
-
-      otherHandle = editor.element.querySelector('.top-left-handle')
-
-      mousedown(otherHandle, {x: 0, y: 100})
+      mousedown(handle, {x: 500, y: 0})
     })
 
     afterEach(() => {
-      mouseup(otherHandle)
+      mouseup(handle)
     })
 
-    it('locks the width of the version box', () => {
+    it('resizes the box conserving the initial ratio', () => {
       const box = editor.element.querySelector('.version-box')
 
-      mousemove(otherHandle, {x: -100, y: 120})
-      expect(box.getBoundingClientRect()).to.eql({
-        top: 100,
-        left: 0,
-        bottom: 500,
-        right: 400,
-        width: 400,
-        height: 400
+      mousemove(handle, {x: 450, y: 20})
+      expect(box.getBoundingClientRect()).to.eql(getBox(50, 100, 350, 350))
+
+      mousemove(handle, {x: 550, y: 20})
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+    })
+
+    describe('when the image has a portrait orientation', () => {
+      let otherHandle
+
+      beforeEach(() => {
+        img = getImage(600, 900, 400, 600)
+        version = new Version('dummy', [200, 200])
+        editor = new VersionEditor(img, version)
+
+        getTestRoot().appendChild(editor.element)
+
+        otherHandle = editor.element.querySelector('.top-right-handle')
+
+        mousedown(otherHandle, {x: 400, y: 100})
+      })
+
+      afterEach(() => {
+        mouseup(otherHandle)
+      })
+
+      it('locks the width of the version box', () => {
+        const box = editor.element.querySelector('.version-box')
+
+        mousemove(otherHandle, {x: 500, y: 120})
+        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+      })
+    })
+  })
+
+  describe('dragging the bottom left handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.bottom-left-handle')
+
+      mousedown(handle, {x: 100, y: 400})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 150, y: 380})
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 150, 350, 350))
+
+      mousemove(handle, {x: 50, y: 380})
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+    })
+
+    describe('when the image has a portrait orientation', () => {
+      let otherHandle
+
+      beforeEach(() => {
+        img = getImage(600, 900, 400, 600)
+        version = new Version('dummy', [200, 200])
+        editor = new VersionEditor(img, version)
+
+        getTestRoot().appendChild(editor.element)
+
+        otherHandle = editor.element.querySelector('.bottom-left-handle')
+
+        mousedown(otherHandle, {x: 0, y: 500})
+      })
+
+      afterEach(() => {
+        mouseup(otherHandle)
+      })
+
+      it('locks the width of the version box', () => {
+        const box = editor.element.querySelector('.version-box')
+
+        mousemove(otherHandle, {x: -100, y: 380})
+        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+      })
+    })
+  })
+
+  describe('dragging the bottom right handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.bottom-right-handle')
+
+      mousedown(handle, {x: 500, y: 400})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 450, y: 380})
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 350, 350))
+
+      mousemove(handle, {x: 550, y: 380})
+      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+    })
+
+    describe('when the image has a portrait orientation', () => {
+      let otherHandle
+
+      beforeEach(() => {
+        img = getImage(600, 900, 400, 600)
+        version = new Version('dummy', [200, 200])
+        editor = new VersionEditor(img, version)
+
+        getTestRoot().appendChild(editor.element)
+
+        otherHandle = editor.element.querySelector('.bottom-right-handle')
+
+        mousedown(otherHandle, {x: 400, y: 500})
+      })
+
+      afterEach(() => {
+        mouseup(otherHandle)
+      })
+
+      it('locks the width of the version box', () => {
+        const box = editor.element.querySelector('.version-box')
+
+        mousemove(otherHandle, {x: 550, y: 380})
+        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
       })
     })
   })

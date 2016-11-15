@@ -61,7 +61,7 @@ export default class VersionEditor {
   }
 
   subscribeToDragBox () {
-    this.dragGesture(this.element.querySelector('.drag-box'), (data) => {
+    this.dragGesture('.drag-box', (data) => {
       const {containerBounds: b, handleBounds: hb, offsetX, offsetY, pageX, pageY} = data
       const x = pageX - offsetX
       const y = pageY - offsetY
@@ -70,7 +70,7 @@ export default class VersionEditor {
       this.box.style.top = px(clamp(y, b.top, b.bottom - hb.height))
     })
 
-    this.dragGesture(this.element.querySelector('.top-left-handle'), (data) => {
+    this.dragGesture('.top-left-handle', (data) => {
       const {
         containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
       } = data
@@ -85,6 +85,66 @@ export default class VersionEditor {
       this.updateBox(
         clamp(bb.right - newWidth, b.left, b.right - hb.width),
         clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height),
+        newWidth,
+        newHeight
+      )
+    })
+
+    this.dragGesture('.top-right-handle', (data) => {
+      const {
+        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+      } = data
+
+      const x = pageX - offsetX + (hb.width / 2)
+      const ratio = this.version.getRatio()
+      let newWidth = x - bb.left
+      let newHeight = newWidth / ratio
+
+      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+
+      this.updateBox(
+        bb.left,
+        clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height),
+        newWidth,
+        newHeight
+      )
+    })
+
+    this.dragGesture('.bottom-left-handle', (data) => {
+      const {
+        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+      } = data
+
+      const x = pageX - offsetX + (hb.width / 2)
+      const ratio = this.version.getRatio()
+      let newWidth = bb.right - x
+      let newHeight = newWidth / ratio
+
+      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+
+      this.updateBox(
+        clamp(bb.right - newWidth, b.left, b.right - hb.width),
+        bb.top,
+        newWidth,
+        newHeight
+      )
+    })
+
+    this.dragGesture('.bottom-right-handle', (data) => {
+      const {
+        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+      } = data
+
+      const x = pageX - offsetX + (hb.width / 2)
+      const ratio = this.version.getRatio()
+      let newWidth = x - bb.left
+      let newHeight = newWidth / ratio
+
+      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+
+      this.updateBox(
+        bb.left,
+        bb.top,
         newWidth,
         newHeight
       )
@@ -107,7 +167,8 @@ export default class VersionEditor {
     return [width, height]
   }
 
-  dragGesture (target, handler) {
+  dragGesture (selector, handler) {
+    const target = this.element.querySelector(selector)
     this.subscriptions.add(new DisposableEvent(target, 'mousedown', (e) => {
       const dragSubs = new CompositeDisposable()
       const handleBounds = target.getBoundingClientRect()
