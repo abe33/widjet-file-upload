@@ -25,6 +25,18 @@ describe('VersionEditor', () => {
       return this.parentNode.getBoundingClientRect()
     } else if (this.classList.contains('version-preview')) {
       return this.querySelector('img').getBoundingClientRect()
+    } else if (this.classList.contains('top-left-handle')) {
+      const {top, left} = this.parentNode.getBoundingClientRect()
+      return getBox(top - 2, left - 2, 4, 4)
+    } else if (this.classList.contains('top-right-handle')) {
+      const {top, right} = this.parentNode.getBoundingClientRect()
+      return getBox(top - 2, right - 2, 4, 4)
+    } else if (this.classList.contains('bottom-left-handle')) {
+      const {bottom, left} = this.parentNode.getBoundingClientRect()
+      return getBox(bottom - 2, left - 2, 4, 4)
+    } else if (this.classList.contains('bottom-right-handle')) {
+      const {bottom, right} = this.parentNode.getBoundingClientRect()
+      return getBox(bottom - 2, right - 2, 4, 4)
     }
   })
 
@@ -63,7 +75,7 @@ describe('VersionEditor', () => {
     })
 
     afterEach(() => {
-      mouseup(handle, {x: 300, y: 300})
+      mouseup(handle)
     })
 
     it('moves the drag box inside the image bounds', () => {
@@ -85,6 +97,43 @@ describe('VersionEditor', () => {
         left: 0,
         bottom: 400,
         right: 400,
+        width: 400,
+        height: 400
+      })
+    })
+  })
+
+  describe('dragging the top left handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.top-left-handle')
+
+      mousedown(handle, {x: 100, y: 0})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 150, y: 20})
+      expect(box.getBoundingClientRect()).to.eql({
+        top: 50,
+        left: 150,
+        bottom: 400,
+        right: 500,
+        width: 350,
+        height: 350
+      })
+
+      mousemove(handle, {x: 50, y: 20})
+      expect(box.getBoundingClientRect()).to.eql({
+        top: 0,
+        left: 100,
+        bottom: 400,
+        right: 500,
         width: 400,
         height: 400
       })

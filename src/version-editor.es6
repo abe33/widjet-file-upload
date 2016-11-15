@@ -52,27 +52,63 @@ export default class VersionEditor {
   }
 
   subscribeToDragBox () {
-    const dragBox = this.element.querySelector('.drag-box')
+    this.dragGesture(this.element.querySelector('.drag-box'), (data) => {
+      const {containerBounds: b, handleBounds: hb, offsetX, offsetY, pageX, pageY} = data
+      const x = pageX - offsetX
+      const y = pageY - offsetY
 
-    this.subscriptions.add(new DisposableEvent(dragBox, 'mousedown', (e) => {
+      this.box.style.left = px(clamp(x, b.left, b.right - hb.width))
+      this.box.style.top = px(clamp(y, b.top, b.bottom - hb.height))
+    })
+
+    this.dragGesture(this.element.querySelector('.top-left-handle'), (data) => {
+      const {
+        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+      } = data
+
+      const x = pageX - offsetX + (hb.width / 2)
+      const ratio = this.version.getRatio()
+      let newWidth = bb.right - x
+      let newHeight = newWidth / ratio
+
+      if (newHeight > b.height) {
+        newHeight = b.height
+        newWidth = newHeight * ratio
+      }
+
+      this.box.style.cssText = `
+        left: ${px(clamp(bb.right - newWidth, b.left, b.right - hb.width))};
+        top: ${px(clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height))};
+        width: ${px(newWidth)};
+        height: ${px(newHeight)};
+      `
+    })
+  }
+
+  dragGesture (target, handler) {
+    this.subscriptions.add(new DisposableEvent(target, 'mousedown', (e) => {
       const dragSubs = new CompositeDisposable()
-      const bounds = this.container.getBoundingClientRect()
-
-      const {top, left, width, height} = dragBox.getBoundingClientRect()
-      const offsetX = e.pageX - left
-      const offsetY = e.pageY - top
+      const handleBounds = target.getBoundingClientRect()
+      const offsetX = e.pageX - handleBounds.left
+      const offsetY = e.pageY - handleBounds.top
 
       dragSubs.add(new DisposableEvent(document.body, 'mousemove', (e) => {
-        const x = e.pageX - offsetX
-        const y = e.pageY - offsetY
-
-        this.box.style.left = px(clamp(x, bounds.left, bounds.right - width))
-        this.box.style.top = px(clamp(y, bounds.top, bounds.bottom - height))
+        handler({
+          handleBounds,
+          containerBounds: this.container.getBoundingClientRect(),
+          boxBounds: this.box.getBoundingClientRect(),
+          offsetX, offsetY,
+          pageX: e.pageX,
+          pageY: e.pageY
+        })
       }))
 
       dragSubs.add(new DisposableEvent(document.body, 'mouseup', (e) => {
+        this.subscriptions.remove(dragSubs)
         dragSubs.dispose()
       }))
+
+      this.subscriptions.add(dragSubs)
     }))
   }
 }

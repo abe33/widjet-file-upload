@@ -1,8 +1,5 @@
 import {head, last} from 'widjet-utils'
-
-const ratio = ([w, h]) => w / h
-
-const dimensions = (img) => [img.naturalWidth, img.naturalHeight]
+import {ratio, dimensions} from './utils'
 
 export default class Version {
   constructor (name, size) {
@@ -23,6 +20,8 @@ export default class Version {
     return canvas
   }
 
+  getRatio () { return ratio(this.size) }
+
   getCanvas () {
     if (!this.canvas) {
       this.canvas = document.createElement('canvas')
@@ -41,13 +40,13 @@ export default class Version {
   }
 
   getDefaultBox (image) {
-    return ratio(dimensions(image)) > ratio(this.size)
+    return ratio(dimensions(image)) > this.getRatio()
       ? this.getDefaultHorizontalBox(image)
       : this.getDefaultVerticalBox(image)
   }
 
   getDefaultHorizontalBox (image) {
-    const width = image.naturalHeight * ratio(this.size)
+    const width = image.naturalHeight * this.getRatio()
     return [
       (image.naturalWidth - width) / 2,
       0,
@@ -57,7 +56,7 @@ export default class Version {
   }
 
   getDefaultVerticalBox (image) {
-    const height = image.naturalWidth / ratio(this.size)
+    const height = image.naturalWidth / this.getRatio()
     return [
       0,
       (image.naturalHeight - height) / 2,
