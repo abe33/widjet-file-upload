@@ -80,7 +80,11 @@ export default class VersionEditor {
       let newWidth = bb.right - x
       let newHeight = newWidth / ratio
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+      ;[newWidth, newHeight] = this.contraintBoxSize([
+        newWidth, newHeight
+      ], [
+        bb.right, bb.bottom
+      ])
 
       this.updateBox(
         clamp(bb.right - newWidth, b.left, b.right - hb.width),
@@ -100,7 +104,11 @@ export default class VersionEditor {
       let newWidth = x - bb.left
       let newHeight = newWidth / ratio
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+      ;[newWidth, newHeight] = this.contraintBoxSize([
+        newWidth, newHeight
+      ], [
+        b.width - bb.left, b.bottom
+      ])
 
       this.updateBox(
         bb.left,
@@ -120,7 +128,11 @@ export default class VersionEditor {
       let newWidth = bb.right - x
       let newHeight = newWidth / ratio
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+      ;[newWidth, newHeight] = this.contraintBoxSize([
+        newWidth, newHeight
+      ], [
+        bb.right, b.height - bb.top
+      ])
 
       this.updateBox(
         clamp(bb.right - newWidth, b.left, b.right - hb.width),
@@ -140,7 +152,11 @@ export default class VersionEditor {
       let newWidth = x - bb.left
       let newHeight = newWidth / ratio
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([newWidth, newHeight], b)
+      ;[newWidth, newHeight] = this.contraintBoxSize([
+        newWidth, newHeight
+      ], [
+        b.width - bb.left, b.height - bb.top
+      ])
 
       this.updateBox(
         bb.left,
@@ -149,18 +165,61 @@ export default class VersionEditor {
         newHeight
       )
     })
+
+    this.dragGesture('img', (data) => {
+      const {
+        containerBounds: b, handleBounds: hb, offsetX, offsetY, pageX
+      } = data
+
+      const targetX = pageX - hb.left
+      const ratio = this.version.getRatio()
+
+      if (targetX < offsetX) {
+        let newWidth = offsetX - targetX
+        let newHeight = newWidth / ratio
+
+        ;[newWidth, newHeight] = this.contraintBoxSize([
+          newWidth, newHeight
+        ], [
+          offsetX, offsetY
+        ])
+
+        this.updateBox(
+          targetX,
+          offsetY - newHeight,
+          newWidth,
+          newHeight
+        )
+      } else {
+        let newWidth = targetX - offsetX
+        let newHeight = newWidth / ratio
+
+        ;[newWidth, newHeight] = this.contraintBoxSize([
+          newWidth, newHeight
+        ], [
+          b.width - offsetX, b.height - offsetY
+        ])
+
+        this.updateBox(
+          offsetX,
+          offsetY,
+          newWidth,
+          newHeight
+        )
+      }
+    })
   }
 
-  contraintBoxSize ([width, height], bounds) {
+  contraintBoxSize ([width, height], [maxWidth, maxHeight]) {
     const ratio = this.version.getRatio()
 
-    if (width > bounds.width) {
-      width = bounds.width
+    if (width > maxWidth) {
+      width = maxWidth
       height = width / ratio
     }
 
-    if (height > bounds.height) {
-      height = bounds.height
+    if (height > maxHeight) {
+      height = maxHeight
       width = height * ratio
     }
 
@@ -170,12 +229,18 @@ export default class VersionEditor {
   dragGesture (selector, handler) {
     const target = this.element.querySelector(selector)
     this.subscriptions.add(new DisposableEvent(target, 'mousedown', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       const dragSubs = new CompositeDisposable()
       const handleBounds = target.getBoundingClientRect()
       const offsetX = e.pageX - handleBounds.left
       const offsetY = e.pageY - handleBounds.top
 
       dragSubs.add(new DisposableEvent(document.body, 'mousemove', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+
         handler({
           handleBounds,
           containerBounds: this.container.getBoundingClientRect(),
@@ -187,6 +252,9 @@ export default class VersionEditor {
       }))
 
       dragSubs.add(new DisposableEvent(document.body, 'mouseup', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+
         this.subscriptions.remove(dragSubs)
         dragSubs.dispose()
       }))

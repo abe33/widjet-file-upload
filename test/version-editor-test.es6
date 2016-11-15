@@ -281,4 +281,30 @@ describe('VersionEditor', () => {
       })
     })
   })
+
+  describe('pressing and dragging on the background image', () => {
+    let clone
+    beforeEach(() => {
+      clone = editor.element.querySelector('img')
+
+      mousedown(clone, {x: 50, y: 50})
+    })
+
+    afterEach(() => {
+      mouseup(clone)
+    })
+
+    it('defines new coordinates for the box', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(clone, {x: 250, y: 100})
+      expect(box.getBoundingClientRect()).to.eql(getBox(50, 50, 200, 200))
+
+      mousemove(clone, {x: 800, y: 100})
+      expect(box.getBoundingClientRect()).to.eql(getBox(50, 50, 350, 350))
+
+      mousemove(clone, {x: 20, y: 30})
+      expect(box.getBoundingClientRect()).to.eql(getBox(20, 20, 30, 30))
+    })
+  })
 })
