@@ -59,6 +59,12 @@ describe('VersionEditor', () => {
     expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
   })
 
+  describe('#getVersionBox()', () => {
+    it('returns the version box corresponding to the preview', () => {
+      expect(editor.getVersionBox()).to.eql([150, 0, 600, 600])
+    })
+  })
+
   describe('dragging the box', () => {
     let handle
     beforeEach(() => {

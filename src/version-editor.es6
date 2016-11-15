@@ -41,6 +41,17 @@ export default class VersionEditor {
     this.subscribeToDragBox()
   }
 
+  getVersionBox () {
+    const scale = this.source.width / this.source.naturalWidth
+    const bounds = this.box.getBoundingClientRect()
+    return [
+      bounds.left / scale,
+      bounds.top / scale,
+      bounds.width / scale,
+      bounds.height / scale
+    ]
+  }
+
   boxToPreview (boxData) {
     const scale = this.source.width / this.source.naturalWidth
     this.updateBox(
