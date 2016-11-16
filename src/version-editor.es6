@@ -8,9 +8,10 @@ export function editVersion (source, version) {
   return new Promise((resolve, reject) => {
     const editor = new VersionEditor(source, version)
     editor.onSave = () => {
+      const box = editor.getVersionBox()
       detachNode(editor.element)
       editor.dispose()
-      resolve(editor.getVersionBox())
+      resolve(box)
     }
     editor.onCancel = () => {
       detachNode(editor.element)
@@ -80,12 +81,17 @@ export default class VersionEditor {
 
   getVersionBox () {
     const scale = this.clone.width / this.source.naturalWidth
-    const bounds = this.box.getBoundingClientRect()
+    // return [
+    //   this.box.offsetLeft / scale,
+    //   this.box.offsetTop / scale,
+    //   this.box.offsetWidth / scale,
+    //   this.box.offsetHeight / scale
+    // ]
     return [
-      bounds.left / scale,
-      bounds.top / scale,
-      bounds.width / scale,
-      bounds.height / scale
+      parseInt(this.box.style.left, 10) / scale,
+      parseInt(this.box.style.top, 10) / scale,
+      parseInt(this.box.style.width, 10) / scale,
+      parseInt(this.box.style.height, 10) / scale
     ]
   }
 
@@ -111,11 +117,11 @@ export default class VersionEditor {
   subscribeToDragBox () {
     this.dragGesture('.drag-box', (data) => {
       const {containerBounds: b, handleBounds: hb, offsetX, offsetY, pageX, pageY} = data
-      const x = pageX - offsetX
-      const y = pageY - offsetY
+      const x = pageX - (b.left + offsetX)
+      const y = pageY - (b.top + offsetY)
 
-      this.box.style.left = px(clamp(x, b.left, b.right - hb.width))
-      this.box.style.top = px(clamp(y, b.top, b.bottom - hb.height))
+      this.box.style.left = px(clamp(x, 0, b.width - hb.width))
+      this.box.style.top = px(clamp(y, 0, b.height - hb.height))
     })
 
     this.dragGesture('.top-left-handle', (data) => {
