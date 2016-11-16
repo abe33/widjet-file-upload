@@ -1,6 +1,7 @@
 import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
-import {mousedown, mousemove, mouseup} from 'widjet-test-utils/events'
+import sinon from 'sinon'
+import {click, mousedown, mousemove, mouseup} from 'widjet-test-utils/events'
 import {getTestRoot, getBox, fakeBoundingClientRects} from 'widjet-test-utils/dom'
 
 import Version from '../src/version'
@@ -37,6 +38,8 @@ describe('VersionEditor', () => {
     } else if (this.classList.contains('bottom-right-handle')) {
       const {bottom, right} = this.parentNode.getBoundingClientRect()
       return getBox(bottom - 2, right - 2, 4, 4)
+    } else {
+      return getBox(0, 0, 50, 50)
     }
   })
 
@@ -50,6 +53,8 @@ describe('VersionEditor', () => {
     getTestRoot().appendChild(editor.element)
   })
 
+  afterEach(() => { editor.dispose() })
+
   it('clones the source image and places it in the editor', () => {
     expect(editor.element.querySelector('img')).not.to.be(null)
   })
@@ -62,6 +67,26 @@ describe('VersionEditor', () => {
   describe('#getVersionBox()', () => {
     it('returns the version box corresponding to the preview', () => {
       expect(editor.getVersionBox()).to.eql([150, 0, 600, 600])
+    })
+  })
+
+  describe('#onSave', () => {
+    it('is called whenever the save button is clicked', () => {
+      editor.onSave = sinon.spy()
+
+      click(editor.element.querySelector('.save'))
+
+      expect(editor.onSave.called).to.be.ok()
+    })
+  })
+
+  describe('#onCancel', () => {
+    it('is called whenever the save button is clicked', () => {
+      editor.onCancel = sinon.spy()
+
+      click(editor.element.querySelector('.cancel'))
+
+      expect(editor.onCancel.called).to.be.ok()
     })
   })
 

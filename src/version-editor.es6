@@ -18,14 +18,16 @@ export default class VersionEditor {
           </div>
         </div>
         <div class="actions">
-          <button type="button" tabindex="-1"><span>Cancel</span></button>
-          <button type="button" tabindex="-1"><span>Save</span></button>
+          <button type="button" class="cancel"><span>Cancel</span></button>
+          <button type="button" class="save"><span>Save</span></button>
         </div>
       </div>
       `)
 
     const box = node.querySelector('.version-box')
     const container = node.querySelector('.version-preview')
+    const cancelButton = node.querySelector('.cancel')
+    const saveButton = node.querySelector('.save')
     container.insertBefore(cloneNode(source), container.firstElementChild)
 
     this.source = source
@@ -38,7 +40,19 @@ export default class VersionEditor {
 
     this.subscriptions = new CompositeDisposable()
 
+    this.subscriptions.add(new DisposableEvent(saveButton, 'click', () => {
+      this.onSave && this.onSave()
+    }))
+
+    this.subscriptions.add(new DisposableEvent(cancelButton, 'click', () => {
+      this.onCancel && this.onCancel()
+    }))
+
     this.subscribeToDragBox()
+  }
+
+  dispose () {
+    this.subscriptions.dispose()
   }
 
   getVersionBox () {
