@@ -83,6 +83,7 @@ describe('VersionEditor', () => {
     editor = new VersionEditor(img, version)
 
     getTestRoot().appendChild(editor.element)
+    editor.init()
   })
 
   afterEach(() => { editor.dispose() })
@@ -176,6 +177,7 @@ describe('VersionEditor', () => {
         editor = new VersionEditor(img, version)
 
         getTestRoot().appendChild(editor.element)
+        editor.init()
 
         otherHandle = editor.element.querySelector('.top-left-handle')
 
@@ -226,6 +228,7 @@ describe('VersionEditor', () => {
         editor = new VersionEditor(img, version)
 
         getTestRoot().appendChild(editor.element)
+        editor.init()
 
         otherHandle = editor.element.querySelector('.top-right-handle')
 
@@ -276,6 +279,7 @@ describe('VersionEditor', () => {
         editor = new VersionEditor(img, version)
 
         getTestRoot().appendChild(editor.element)
+        editor.init()
 
         otherHandle = editor.element.querySelector('.bottom-left-handle')
 
@@ -326,6 +330,7 @@ describe('VersionEditor', () => {
         editor = new VersionEditor(img, version)
 
         getTestRoot().appendChild(editor.element)
+        editor.init()
 
         otherHandle = editor.element.querySelector('.bottom-right-handle')
 

@@ -19,6 +19,7 @@ export function editVersion (source, version) {
     }
 
     document.body.appendChild(editor.element)
+    editor.init()
   })
 }
 
@@ -44,17 +45,21 @@ export default class VersionEditor {
 
     const box = node.querySelector('.version-box')
     const container = node.querySelector('.version-preview')
-    const cancelButton = node.querySelector('.cancel')
-    const saveButton = node.querySelector('.save')
-    container.insertBefore(cloneNode(source), container.firstElementChild)
+    const clone = cloneNode(source)
+    container.insertBefore(clone, container.firstElementChild)
 
     this.source = source
+    this.clone = clone
     this.version = version
     this.element = node
     this.box = box
     this.container = container
+  }
 
-    this.boxToPreview(version.getBox(source))
+  init () {
+    const cancelButton = this.element.querySelector('.cancel')
+    const saveButton = this.element.querySelector('.save')
+    this.boxToPreview(this.version.getBox(this.source))
 
     this.subscriptions = new CompositeDisposable()
 
@@ -74,7 +79,7 @@ export default class VersionEditor {
   }
 
   getVersionBox () {
-    const scale = this.source.width / this.source.naturalWidth
+    const scale = this.clone.width / this.source.naturalWidth
     const bounds = this.box.getBoundingClientRect()
     return [
       bounds.left / scale,
@@ -85,7 +90,7 @@ export default class VersionEditor {
   }
 
   boxToPreview (boxData) {
-    const scale = this.source.width / this.source.naturalWidth
+    const scale = this.clone.width / this.source.naturalWidth
     this.updateBox(
       boxData[0] * scale,
       boxData[1] * scale,
