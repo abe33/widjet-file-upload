@@ -1,6 +1,8 @@
 import widgets from 'widjet'
-import {parent, getNode} from 'widjet-utils'
+import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
+import {parent, getNode, asPair} from 'widjet-utils'
 import Version from './version'
+import {editVersion} from './version-editor'
 
 widgets.define('file-versions', (options) => {
   const getVersion = options.getVersion || ((img, version) => {
@@ -35,18 +37,30 @@ widgets.define('file-versions', (options) => {
     }
 
     container.appendChild(versionsContainer)
+    let subscriptions
 
     input.addEventListener('preview:loaded', () => {
       versionsContainer.innerHTML = ''
+      subscriptions && subscriptions.dispose()
+
       const img = container.querySelector('img')
 
       if (img) {
-        for (let versionName in versions) {
-          const version = versions[versionName]
+        subscriptions = new CompositeDisposable()
+
+        asPair(versions).forEach(([versionName, version]) => {
           version.setBox()
           const div = getVersion(img, version)
+          const btn = div.querySelector('button')
+
+          subscriptions.add(new DisposableEvent(btn, 'click', () => {
+            editVersion(img, version).then((box) => {
+              version.setBox(box)
+              version.getVersion(img)
+            })
+          }))
           versionsContainer.appendChild(div)
-        }
+        })
       }
     })
   }

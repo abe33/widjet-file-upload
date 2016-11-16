@@ -4,6 +4,7 @@ import sinon from 'sinon'
 import widgets from 'widjet'
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 import {waitsFor} from 'widjet-test-utils/async'
+import {click} from 'widjet-test-utils/events'
 
 import '../src/index'
 
@@ -66,6 +67,27 @@ describe('file-versions', () => {
     it('appends a canvas corresponding to each version', () => {
       const versions = versionsContainer.querySelectorAll('canvas')
       expect(versions).to.have.length(3)
+    })
+
+    describe('clicking on the edit button', () => {
+      beforeEach(() => {
+        click(versionsContainer.querySelector('.version button'))
+        return waitsFor(() => document.body.querySelector('.version-editor'))
+      })
+
+      it('appends an editor to the DOM', () => {
+        expect(document.body.querySelector('.version-editor')).not.to.be(null)
+      })
+
+      describe('clicking on the editor save button', () => {
+        beforeEach(() => {
+          click(document.body.querySelector('.version-editor .save'))
+        })
+
+        it('removes the editor from the DOM', () => {
+          expect(document.body.querySelector('.version-editor')).to.be(null)
+        })
+      })
     })
 
     describe('then changed', () => {
