@@ -1,8 +1,26 @@
 import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
-import {getNode, cloneNode} from 'widjet-utils'
+import {getNode, cloneNode, detachNode} from 'widjet-utils'
 
 const px = (v) => `${v}px`
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v))
+
+export function editVersion (source, version) {
+  return new Promise((resolve, reject) => {
+    const editor = new VersionEditor(source, version)
+    editor.onSave = () => {
+      detachNode(editor.element)
+      editor.dispose()
+      resolve(editor.getVersionBox())
+    }
+    editor.onCancel = () => {
+      detachNode(editor.element)
+      editor.dispose()
+      reject()
+    }
+
+    document.body.appendChild(editor.element)
+  })
+}
 
 export default class VersionEditor {
   constructor (source, version) {

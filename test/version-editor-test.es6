@@ -1,47 +1,79 @@
 import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
 import sinon from 'sinon'
+import {detachNode} from 'widjet-utils'
 import {click, mousedown, mousemove, mouseup} from 'widjet-test-utils/events'
 import {getTestRoot, getBox, fakeBoundingClientRects} from 'widjet-test-utils/dom'
+import {waitsFor} from 'widjet-test-utils/async'
 
 import Version from '../src/version'
-import VersionEditor from '../src/version-editor'
+import VersionEditor, {editVersion} from '../src/version-editor'
 
 import {withFakeContext, getImage} from './helpers'
+
+describe('editVersion()', () => {
+  jsdom()
+  withFakeContext()
+  fakeBoundingClientRects(computeBounds)
+
+  let img, version, promise
+
+  beforeEach(() => {
+    img = getImage(900, 600, 600, 400)
+    version = new Version('dummy', [200, 200])
+    promise = editVersion(img, version)
+
+    return waitsFor(() => document.body.querySelector('.version-editor'))
+  })
+
+  afterEach(() => {
+    detachNode(document.body.querySelector('.version-editor'))
+  })
+
+  it('appends an editor to the DOM', () => {
+    expect(document.body.querySelector('.version-editor')).not.to.be(null)
+  })
+
+  describe('clicking on save', () => {
+    beforeEach(() => {
+      click(document.body.querySelector('.save'))
+    })
+
+    it('resolves the promise with the version box', () => {
+      return promise.then((box) => {
+        expect(box).to.eql([150, 0, 600, 600])
+      })
+    })
+
+    it('removes the editor from the DOM', () => {
+      return promise.then((box) => {
+        expect(document.body.querySelector('.version-editor')).to.be(null)
+      })
+    })
+  })
+
+  describe('clicking on cancel', () => {
+    beforeEach(() => {
+      click(document.body.querySelector('.cancel'))
+    })
+
+    it('rejects the promise', (done) => {
+      promise.catch(done)
+    })
+
+    it('removes the editor from the DOM', (done) => {
+      promise.catch(() => {
+        expect(document.body.querySelector('.version-editor')).to.be(null)
+        done()
+      })
+    })
+  })
+})
 
 describe('VersionEditor', () => {
   jsdom()
   withFakeContext()
-  fakeBoundingClientRects(function () {
-    if (this.nodeName === 'IMG') {
-      return getBox(0, 0, this.width, this.height)
-    } else if (this.classList.contains('version-box')) {
-      const top = parseInt(this.style.top, 10)
-      const left = parseInt(this.style.left, 10)
-      const width = parseInt(this.style.width, 10)
-      const height = parseInt(this.style.height, 10)
-
-      return getBox(top, left, width, height)
-    } else if (this.classList.contains('drag-box')) {
-      return this.parentNode.getBoundingClientRect()
-    } else if (this.classList.contains('version-preview')) {
-      return this.querySelector('img').getBoundingClientRect()
-    } else if (this.classList.contains('top-left-handle')) {
-      const {top, left} = this.parentNode.getBoundingClientRect()
-      return getBox(top - 2, left - 2, 4, 4)
-    } else if (this.classList.contains('top-right-handle')) {
-      const {top, right} = this.parentNode.getBoundingClientRect()
-      return getBox(top - 2, right - 2, 4, 4)
-    } else if (this.classList.contains('bottom-left-handle')) {
-      const {bottom, left} = this.parentNode.getBoundingClientRect()
-      return getBox(bottom - 2, left - 2, 4, 4)
-    } else if (this.classList.contains('bottom-right-handle')) {
-      const {bottom, right} = this.parentNode.getBoundingClientRect()
-      return getBox(bottom - 2, right - 2, 4, 4)
-    } else {
-      return getBox(0, 0, 50, 50)
-    }
-  })
+  fakeBoundingClientRects(computeBounds)
 
   let img, version, editor
 
@@ -339,3 +371,34 @@ describe('VersionEditor', () => {
     })
   })
 })
+
+function computeBounds () {
+  if (this.nodeName === 'IMG') {
+    return getBox(0, 0, this.width, this.height)
+  } else if (this.classList.contains('version-box')) {
+    const top = parseInt(this.style.top, 10)
+    const left = parseInt(this.style.left, 10)
+    const width = parseInt(this.style.width, 10)
+    const height = parseInt(this.style.height, 10)
+
+    return getBox(top, left, width, height)
+  } else if (this.classList.contains('drag-box')) {
+    return this.parentNode.getBoundingClientRect()
+  } else if (this.classList.contains('version-preview')) {
+    return this.querySelector('img').getBoundingClientRect()
+  } else if (this.classList.contains('top-left-handle')) {
+    const {top, left} = this.parentNode.getBoundingClientRect()
+    return getBox(top - 2, left - 2, 4, 4)
+  } else if (this.classList.contains('top-right-handle')) {
+    const {top, right} = this.parentNode.getBoundingClientRect()
+    return getBox(top - 2, right - 2, 4, 4)
+  } else if (this.classList.contains('bottom-left-handle')) {
+    const {bottom, left} = this.parentNode.getBoundingClientRect()
+    return getBox(bottom - 2, left - 2, 4, 4)
+  } else if (this.classList.contains('bottom-right-handle')) {
+    const {bottom, right} = this.parentNode.getBoundingClientRect()
+    return getBox(bottom - 2, right - 2, 4, 4)
+  } else {
+    return getBox(0, 0, 50, 50)
+  }
+}
