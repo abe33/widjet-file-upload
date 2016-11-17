@@ -25,7 +25,7 @@ describe('file-versions', () => {
   withFakeContext()
   triggerImageLoad()
 
-  let wrapper, input, versionsContainer, loadedSpy
+  let wrapper, input, versionsContainer, loadedSpy, versionSpy
 
   const spyOnLoad = () => {
     loadedSpy = sinon.spy()
@@ -45,11 +45,13 @@ describe('file-versions', () => {
              data-versions='${JSON.stringify(versions)}'>
     `)
 
+    versionSpy = sinon.spy()
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
     widgets('file-versions', 'input[type="file"][data-versions]', {
       on: 'init',
       versionsProvider,
-      versionBoxesProvider
+      versionBoxesProvider,
+      onVersionsChange: versionSpy
     })
 
     spyOnLoad()
@@ -57,6 +59,10 @@ describe('file-versions', () => {
     wrapper = getTestRoot().querySelector('.file-input')
     input = wrapper.querySelector('input[type="file"]')
     versionsContainer = wrapper.querySelector('.versions')
+  })
+
+  afterEach(() => {
+    widgets.release('file-versions', 'file-preview')
   })
 
   it('appends a versions container in the image input', () => {
@@ -98,6 +104,10 @@ describe('file-versions', () => {
 
         it('removes the editor from the DOM', () => {
           expect(document.body.querySelector('.version-editor')).to.be(null)
+        })
+
+        it.skip('calls the onVersionsChange callback', () => {
+          expect(versionSpy.called).to.be.ok()
         })
       })
     })

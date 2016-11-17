@@ -1,11 +1,11 @@
 import widgets from 'widjet'
-import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
+import {CompositeDisposable, DisposableEvent, Disposable} from 'widjet-disposables'
 import {parent, getNode, asPair} from 'widjet-utils'
 import Version from './version'
 import {editVersion} from './version-editor'
 
 widgets.define('file-versions', (options) => {
-  const {versionsProvider, versionBoxesProvider} = options
+  const {versionsProvider, versionBoxesProvider, onVersionsChange} = options
 
   const getVersion = options.getVersion || ((img, version) => {
     const canvas = version.getVersion(img)
@@ -39,31 +39,42 @@ widgets.define('file-versions', (options) => {
     }
 
     container.appendChild(versionsContainer)
-    let subscriptions
+    let versionsSubs
 
-    input.addEventListener('preview:loaded', () => {
-      versionsContainer.innerHTML = ''
-      subscriptions && subscriptions.dispose()
+    return new CompositeDisposable([
+      new DisposableEvent(input, 'preview:loaded', () => {
+        versionsContainer.innerHTML = ''
+        versionsSubs && versionsSubs.dispose()
 
-      const img = container.querySelector('img')
+        const img = container.querySelector('img')
 
-      if (img) {
-        subscriptions = new CompositeDisposable()
+        if (img) {
+          versionsSubs = new CompositeDisposable()
 
-        asPair(versions).forEach(([versionName, version]) => {
-          version.setBox()
-          const div = getVersion(img, version)
-          const btn = div.querySelector('button')
+          asPair(versions).forEach(([versionName, version]) => {
+            version.setBox()
+            const div = getVersion(img, version)
+            const btn = div.querySelector('button')
 
-          subscriptions.add(new DisposableEvent(btn, 'click', () => {
-            editVersion(img, version).then((box) => {
-              version.setBox(box)
-              version.getVersion(img)
-            })
-          }))
-          versionsContainer.appendChild(div)
-        })
-      }
-    })
+            versionsSubs.add(new DisposableEvent(btn, 'click', () => {
+              editVersion(img, version).then((box) => {
+                version.setBox(box)
+                version.getVersion(img)
+                onVersionsChange && onVersionsChange(input, collectVersions())
+              })
+            }))
+            versionsContainer.appendChild(div)
+          })
+        }
+      }),
+      new Disposable(() => versionsSubs && versionsSubs.dispose())
+    ])
+
+    function collectVersions () {
+      return asPair(versions).reduce((memo, [name, version]) => {
+        memo[name] = version.box
+        return memo
+      }, {})
+    }
   }
 })
