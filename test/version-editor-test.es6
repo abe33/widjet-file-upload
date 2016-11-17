@@ -94,7 +94,7 @@ describe('VersionEditor', () => {
 
   it('appends a div figuring the crop box', () => {
     const box = editor.element.querySelector('.version-box')
-    expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+    expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
   })
 
   describe('#getVersionBox()', () => {
@@ -139,7 +139,7 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 300, y: 300})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 200, 400, 400))
+      expect(box.getBoundingClientRect()).to.eql(getBox(200, 0, 400, 400))
 
       mousemove(handle, {x: -300, y: -100})
       expect(box.getBoundingClientRect()).to.eql(getBox(0, 0, 400, 400))
@@ -162,10 +162,10 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 150, y: 20})
-      expect(box.getBoundingClientRect()).to.eql(getBox(50, 150, 350, 350))
+      expect(box.getBoundingClientRect()).to.eql(getBox(150, 50, 350, 350))
 
       mousemove(handle, {x: 50, y: 20})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
     })
 
     describe('when the image has a portrait orientation', () => {
@@ -192,7 +192,7 @@ describe('VersionEditor', () => {
         const box = editor.element.querySelector('.version-box')
 
         mousemove(otherHandle, {x: -100, y: 120})
-        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+        expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
       })
     })
   })
@@ -213,10 +213,10 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 450, y: 20})
-      expect(box.getBoundingClientRect()).to.eql(getBox(50, 100, 350, 350))
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 50, 350, 350))
 
       mousemove(handle, {x: 550, y: 20})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
     })
 
     describe('when the image has a portrait orientation', () => {
@@ -243,7 +243,7 @@ describe('VersionEditor', () => {
         const box = editor.element.querySelector('.version-box')
 
         mousemove(otherHandle, {x: 500, y: 120})
-        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+        expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
       })
     })
   })
@@ -264,10 +264,10 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 150, y: 380})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 150, 350, 350))
+      expect(box.getBoundingClientRect()).to.eql(getBox(150, 0, 350, 350))
 
       mousemove(handle, {x: 50, y: 380})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
     })
 
     describe('when the image has a portrait orientation', () => {
@@ -294,7 +294,7 @@ describe('VersionEditor', () => {
         const box = editor.element.querySelector('.version-box')
 
         mousemove(otherHandle, {x: -100, y: 380})
-        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+        expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
       })
     })
   })
@@ -315,10 +315,10 @@ describe('VersionEditor', () => {
       const box = editor.element.querySelector('.version-box')
 
       mousemove(handle, {x: 450, y: 380})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 350, 350))
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 350, 350))
 
       mousemove(handle, {x: 550, y: 380})
-      expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
     })
 
     describe('when the image has a portrait orientation', () => {
@@ -345,7 +345,7 @@ describe('VersionEditor', () => {
         const box = editor.element.querySelector('.version-box')
 
         mousemove(otherHandle, {x: 550, y: 380})
-        expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+        expect(box.getBoundingClientRect()).to.eql(getBox(0, 100, 400, 400))
       })
     })
   })
@@ -386,23 +386,23 @@ function computeBounds () {
     const width = parseInt(this.style.width, 10)
     const height = parseInt(this.style.height, 10)
 
-    return getBox(top, left, width, height)
+    return getBox(left, top, width, height)
   } else if (this.classList.contains('drag-box')) {
     return this.parentNode.getBoundingClientRect()
   } else if (this.classList.contains('version-preview')) {
     return this.querySelector('img').getBoundingClientRect()
   } else if (this.classList.contains('top-left-handle')) {
     const {top, left} = this.parentNode.getBoundingClientRect()
-    return getBox(top - 2, left - 2, 4, 4)
+    return getBox(left - 2, top - 2, 4, 4)
   } else if (this.classList.contains('top-right-handle')) {
     const {top, right} = this.parentNode.getBoundingClientRect()
-    return getBox(top - 2, right - 2, 4, 4)
+    return getBox(right - 2, top - 2, 4, 4)
   } else if (this.classList.contains('bottom-left-handle')) {
     const {bottom, left} = this.parentNode.getBoundingClientRect()
-    return getBox(bottom - 2, left - 2, 4, 4)
+    return getBox(left - 2, bottom - 2, 4, 4)
   } else if (this.classList.contains('bottom-right-handle')) {
     const {bottom, right} = this.parentNode.getBoundingClientRect()
-    return getBox(bottom - 2, right - 2, 4, 4)
+    return getBox(right - 2, bottom - 2, 4, 4)
   } else {
     return getBox(0, 0, 50, 50)
   }
