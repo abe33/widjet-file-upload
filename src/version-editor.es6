@@ -81,17 +81,11 @@ export default class VersionEditor {
 
   getVersionBox () {
     const scale = this.clone.width / this.source.naturalWidth
-    // return [
-    //   this.box.offsetLeft / scale,
-    //   this.box.offsetTop / scale,
-    //   this.box.offsetWidth / scale,
-    //   this.box.offsetHeight / scale
-    // ]
     return [
-      parseInt(this.box.style.left, 10) / scale,
-      parseInt(this.box.style.top, 10) / scale,
-      parseInt(this.box.style.width, 10) / scale,
-      parseInt(this.box.style.height, 10) / scale
+      this.box.offsetLeft / scale,
+      this.box.offsetTop / scale,
+      this.box.offsetWidth / scale,
+      this.box.offsetHeight / scale
     ]
   }
 
