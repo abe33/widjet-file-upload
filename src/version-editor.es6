@@ -261,8 +261,6 @@ export default class VersionEditor {
           b.width - offsetX, b.height - offsetY
         ])
 
-        console.log(b, targetX, offsetY, offsetX, newWidth, newHeight)
-
         this.updateBox(
           offsetX,
           offsetY,
