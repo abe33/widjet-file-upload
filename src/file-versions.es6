@@ -5,6 +5,8 @@ import Version from './version'
 import {editVersion} from './version-editor'
 
 widgets.define('file-versions', (options) => {
+  const {versionsProvider, versionBoxesProvider} = options
+
   const getVersion = options.getVersion || ((img, version) => {
     const canvas = version.getVersion(img)
     const div = getNode(`
@@ -22,8 +24,8 @@ widgets.define('file-versions', (options) => {
   return (input, widget) => {
     const container = parent(input, '.file-input')
     const versionsContainer = document.createElement('div')
-    const versionsData = JSON.parse(input.getAttribute('data-versions'))
-    const versionBoxesData = JSON.parse(input.getAttribute('data-version-boxes') || '{}')
+    const versionsData = versionsProvider(input)
+    const versionBoxesData = versionBoxesProvider(input)
     const versions = {}
     versionsContainer.classList.add('versions')
 

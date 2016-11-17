@@ -10,6 +10,16 @@ import '../src/index'
 
 import {triggerImageLoad, withFakeContext, pickFile, getFile} from './helpers'
 
+const versionsProvider = (el) =>
+  el.hasAttribute('data-versions')
+    ? JSON.parse(el.getAttribute('data-versions'))
+    : {}
+
+const versionBoxesProvider = (el) =>
+  el.hasAttribute('data-version-boxes')
+    ? JSON.parse(el.getAttribute('data-version-boxes'))
+    : {}
+
 describe('file-versions', () => {
   jsdom()
   withFakeContext()
@@ -37,7 +47,9 @@ describe('file-versions', () => {
 
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
     widgets('file-versions', 'input[type="file"][data-versions]', {
-      on: 'init'
+      on: 'init',
+      versionsProvider,
+      versionBoxesProvider
     })
 
     spyOnLoad()
@@ -146,7 +158,9 @@ describe('file-versions', () => {
 
       widgets('file-preview', 'input[type="file"]', {on: 'init'})
       widgets('file-versions', 'input[type="file"][data-versions]', {
-        on: 'init'
+        on: 'init',
+        versionsProvider,
+        versionBoxesProvider
       })
 
       spyOnLoad()
