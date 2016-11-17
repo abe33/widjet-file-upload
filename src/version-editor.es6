@@ -1,8 +1,23 @@
 import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
-import {getNode, cloneNode, detachNode} from 'widjet-utils'
+import {getNode, cloneNode, detachNode, parents} from 'widjet-utils'
 
 const px = (v) => `${v}px`
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v))
+const hasFixedParent = (node) => parents(node).some((n) => window.getComputedStyle(n).position === 'fixed')
+const getBoundingScreenRect = (node) => {
+  let bounds = node.getBoundingClientRect()
+  if (hasFixedParent(node)) {
+    bounds = {
+      left: bounds.left + document.body.scrollLeft + document.documentElement.scrollLeft,
+      right: bounds.right + document.body.scrollLeft + document.documentElement.scrollLeft,
+      top: bounds.top + document.body.scrollTop + document.documentElement.scrollTop,
+      bottom: bounds.bottom + document.body.scrollTop + document.documentElement.scrollTop,
+      width: bounds.width,
+      height: bounds.height
+    }
+  }
+  return bounds
+}
 
 export function editVersion (source, version) {
   return new Promise((resolve, reject) => {
@@ -110,20 +125,18 @@ export default class VersionEditor {
 
   subscribeToDragBox () {
     this.dragGesture('.drag-box', (data) => {
-      const {containerBounds: b, handleBounds: hb, offsetX, offsetY, pageX, pageY} = data
-      const x = pageX - (b.left + offsetX)
-      const y = pageY - (b.top + offsetY)
+      const {containerBounds: b, handleBounds: hb, mouseX, mouseY} = data
 
-      this.box.style.left = px(clamp(x, 0, b.width - hb.width))
-      this.box.style.top = px(clamp(y, 0, b.height - hb.height))
+      this.box.style.left = px(clamp(mouseX, 0, b.width - hb.width))
+      this.box.style.top = px(clamp(mouseY, 0, b.height - hb.height))
     })
 
     this.dragGesture('.top-left-handle', (data) => {
       const {
-        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+        containerBounds: b, handleBounds: hb, boxBounds: bb, mouseX
       } = data
 
-      const x = pageX - offsetX + (hb.width / 2)
+      const x = mouseX + (hb.width / 2)
       const ratio = this.version.getRatio()
       let newWidth = bb.right - x
       let newHeight = newWidth / ratio
@@ -135,8 +148,8 @@ export default class VersionEditor {
       ])
 
       this.updateBox(
-        clamp(bb.right - newWidth, b.left, b.right - hb.width),
-        clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height),
+        clamp(bb.right - newWidth, 0, b.width),
+        clamp(bb.bottom - newHeight, 0, b.height),
         newWidth,
         newHeight
       )
@@ -144,10 +157,10 @@ export default class VersionEditor {
 
     this.dragGesture('.top-right-handle', (data) => {
       const {
-        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+        containerBounds: b, handleBounds: hb, boxBounds: bb, mouseX
       } = data
 
-      const x = pageX - offsetX + (hb.width / 2)
+      const x = mouseX + (hb.width / 2)
       const ratio = this.version.getRatio()
       let newWidth = x - bb.left
       let newHeight = newWidth / ratio
@@ -160,7 +173,7 @@ export default class VersionEditor {
 
       this.updateBox(
         bb.left,
-        clamp(bb.bottom - newHeight, b.top, b.bottom - hb.height),
+        clamp(bb.bottom - newHeight, 0, b.height),
         newWidth,
         newHeight
       )
@@ -168,10 +181,10 @@ export default class VersionEditor {
 
     this.dragGesture('.bottom-left-handle', (data) => {
       const {
-        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+        containerBounds: b, handleBounds: hb, boxBounds: bb, mouseX
       } = data
 
-      const x = pageX - offsetX + (hb.width / 2)
+      const x = mouseX + (hb.width / 2)
       const ratio = this.version.getRatio()
       let newWidth = bb.right - x
       let newHeight = newWidth / ratio
@@ -183,7 +196,7 @@ export default class VersionEditor {
       ])
 
       this.updateBox(
-        clamp(bb.right - newWidth, b.left, b.right - hb.width),
+        clamp(bb.right - newWidth, 0, b.width),
         bb.top,
         newWidth,
         newHeight
@@ -192,10 +205,10 @@ export default class VersionEditor {
 
     this.dragGesture('.bottom-right-handle', (data) => {
       const {
-        containerBounds: b, handleBounds: hb, boxBounds: bb, offsetX, pageX
+        containerBounds: b, handleBounds: hb, boxBounds: bb, mouseX
       } = data
 
-      const x = pageX - offsetX + (hb.width / 2)
+      const x = mouseX + (hb.width / 2)
       const ratio = this.version.getRatio()
       let newWidth = x - bb.left
       let newHeight = newWidth / ratio
@@ -216,11 +229,11 @@ export default class VersionEditor {
 
     this.dragGesture('img', (data) => {
       const {
-        containerBounds: b, handleBounds: hb, offsetX, offsetY, pageX
+        containerBounds: b, offsetX, offsetY, mouseX
       } = data
 
-      const targetX = pageX - hb.left
       const ratio = this.version.getRatio()
+      const targetX = mouseX + offsetX
 
       if (targetX < offsetX) {
         let newWidth = offsetX - targetX
@@ -247,6 +260,8 @@ export default class VersionEditor {
         ], [
           b.width - offsetX, b.height - offsetY
         ])
+
+        console.log(b, targetX, offsetY, offsetX, newWidth, newHeight)
 
         this.updateBox(
           offsetX,
@@ -281,21 +296,39 @@ export default class VersionEditor {
       e.stopPropagation()
 
       const dragSubs = new CompositeDisposable()
-      const handleBounds = target.getBoundingClientRect()
+      const handleBounds = getBoundingScreenRect(target)
+      let containerBounds = getBoundingScreenRect(this.container)
       const offsetX = e.pageX - handleBounds.left
       const offsetY = e.pageY - handleBounds.top
+      const boxBounds = {
+        top: this.box.offsetTop,
+        left: this.box.offsetLeft,
+        width: this.box.offsetWidth,
+        height: this.box.offsetHeight,
+        right: this.box.offsetLeft + this.box.offsetWidth,
+        bottom: this.box.offsetTop + this.box.offsetHeight
+      }
 
       dragSubs.add(new DisposableEvent(document.body, 'mousemove', (e) => {
         e.preventDefault()
         e.stopPropagation()
 
         handler({
-          handleBounds,
-          containerBounds: this.container.getBoundingClientRect(),
-          boxBounds: this.box.getBoundingClientRect(),
+          containerBounds,
+          boxBounds,
+          handleBounds: {
+            top: target.offsetTop,
+            left: target.offsetLeft,
+            width: target.offsetWidth,
+            height: target.offsetHeight,
+            right: target.offsetLeft + target.offsetWidth,
+            bottom: target.offsetTop + target.offsetHeight
+          },
           offsetX, offsetY,
           pageX: e.pageX,
-          pageY: e.pageY
+          pageY: e.pageY,
+          mouseX: e.pageX - (containerBounds.left + offsetX),
+          mouseY: e.pageY - (containerBounds.top + offsetY)
         })
       }))
 

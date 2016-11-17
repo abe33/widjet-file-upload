@@ -82,6 +82,12 @@ describe('VersionEditor', () => {
     version = new Version('dummy', [200, 200])
     editor = new VersionEditor(img, version)
 
+    editor.element.style.position = 'fixed'
+    document.documentElement.scrollTop = 0
+    document.documentElement.scrollLeft = 0
+    document.body.scrollTop = 0
+    document.body.scrollLeft = 0
+
     getTestRoot().appendChild(editor.element)
     editor.init()
   })
