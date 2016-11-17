@@ -42,12 +42,12 @@
     "nyc": "^8.3.0",
     "sinon": "^1.17.4",
     "standard": "^5.4.1",
-    "widjet-test-utils": "^1.7.0"
+    "widjet-test-utils": "^1.8.0"
   },
   "dependencies": {
     "babel-cli": "^6.3.17",
     "babel-preset-es2015": "^6.3.13",
-    "widjet": "^1.0.0",
+    "widjet": "^1.0.4",
     "widjet-disposables": "*",
     "widjet-utils": "^0.6.0"
   },
