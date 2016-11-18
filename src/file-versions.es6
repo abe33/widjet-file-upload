@@ -42,6 +42,10 @@ widgets.define('file-versions', (options) => {
     let versionsSubs
 
     return new CompositeDisposable([
+      new DisposableEvent(input, 'preview:removed', () => {
+        versionsContainer.innerHTML = ''
+        versionsSubs && versionsSubs.dispose()
+      }),
       new DisposableEvent(input, 'preview:loaded', () => {
         versionsContainer.innerHTML = ''
         versionsSubs && versionsSubs.dispose()

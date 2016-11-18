@@ -87,6 +87,17 @@ describe('file-versions', () => {
       expect(versions).to.have.length(3)
     })
 
+    describe('and then removed', () => {
+      beforeEach(() => {
+        widgets.dispatch(input, 'preview:removed')
+      })
+
+      it('removes all the previously added versions', () => {
+        const versions = versionsContainer.querySelectorAll('.version')
+        expect(versions).to.have.length(0)
+      })
+    })
+
     describe('clicking on the edit button', () => {
       beforeEach(() => {
         click(versionsContainer.querySelector('.version button'))
