@@ -31,6 +31,7 @@ widgets.define('file-preview', (options) => {
     resetButton && composite.add(new DisposableEvent(resetButton, 'click', () => {
       input.value = ''
       widgets.dispatch(input, 'change')
+      widgets.dispatch(input, 'preview:removed')
     }))
 
     composite.add(new DisposableEvent(input, 'change', (e) => {

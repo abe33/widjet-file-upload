@@ -159,11 +159,14 @@ describe('file-preview', () => {
       })
 
       describe('clicking on the reset button', () => {
-        let promise, previousFile
+        let promise, previousFile, spy
 
         beforeEach(() => {
           promise = getPreview({file})
           previousFile = file
+          spy = sinon.spy()
+
+          input.addEventListener('preview:removed', spy)
 
           const button = wrapper.querySelector('button')
           click(button)
@@ -186,6 +189,10 @@ describe('file-preview', () => {
           expect(wrapper.querySelector('.mime').textContent).to.eql('')
           expect(wrapper.querySelector('.dimensions').textContent).to.eql('')
           expect(wrapper.querySelector('.size').textContent).to.eql('')
+        })
+
+        it('emits a preview:removed event', () => {
+          expect(spy.called).to.be.ok()
         })
       })
 
