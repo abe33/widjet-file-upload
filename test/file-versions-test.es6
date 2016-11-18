@@ -25,7 +25,8 @@ describe('file-versions', () => {
   withFakeContext()
   triggerImageLoad()
 
-  let wrapper, input, versionsContainer, loadedSpy, versionSpy
+  let wrapper, input, versionsContainer, loadedSpy
+  let versionSpy = sinon.spy()
 
   const spyOnLoad = () => {
     loadedSpy = sinon.spy()
@@ -45,7 +46,6 @@ describe('file-versions', () => {
              data-versions='${JSON.stringify(versions)}'>
     `)
 
-    versionSpy = sinon.spy()
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
     widgets('file-versions', 'input[type="file"][data-versions]', {
       on: 'init',
@@ -106,7 +106,7 @@ describe('file-versions', () => {
           expect(document.body.querySelector('.version-editor')).to.be(null)
         })
 
-        it.skip('calls the onVersionsChange callback', () => {
+        it('calls the onVersionsChange callback', () => {
           expect(versionSpy.called).to.be.ok()
         })
       })
