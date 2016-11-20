@@ -1,6 +1,20 @@
 import './file-preview'
 import './file-versions'
 
-import {previewBuilder, disposePreview, getImagePreview, getTextPreview, resetPreviewCache} from './preview'
+import {
+  disposePreview,
+  getImagePreview,
+  getPDFPreview,
+  getTextPreview,
+  previewBuilder,
+  resetPreviewCache
+} from './preview'
 
-export {getImagePreview, getTextPreview, previewBuilder, disposePreview, resetPreviewCache}
+export {
+  disposePreview,
+  getImagePreview,
+  getPDFPreview,
+  getTextPreview,
+  previewBuilder,
+  resetPreviewCache
+}

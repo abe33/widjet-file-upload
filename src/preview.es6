@@ -53,3 +53,13 @@ export function getTextPreview ({file, onprogress}) {
     reader.readAsText(file)
   })
 }
+
+export function getPDFPreview ({file, onprogress}) {
+  return new Promise((resolve, reject) => {
+    const reader = new window.FileReader()
+    reader.onload = (e) => resolve(getNode(`<iframe src="${e.target.result}"></iframe>`))
+    reader.onerror = reject
+    reader.onprogress = onprogress
+    reader.readAsDataURL(file)
+  })
+}

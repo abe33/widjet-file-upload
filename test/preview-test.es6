@@ -2,7 +2,7 @@ import expect from 'expect.js'
 import jsdom from 'mocha-jsdom'
 import sinon from 'sinon'
 
-import {previewBuilder, disposePreview, resetPreviewCache, getTextPreview} from '../src/preview'
+import {previewBuilder, disposePreview, resetPreviewCache, getTextPreview, getPDFPreview} from '../src/preview'
 import {getFile} from './helpers'
 
 describe('previewBuilder()', () => {
@@ -70,21 +70,24 @@ describe('previewBuilder()', () => {
   })
 
   describe('with some custom previewer', () => {
-    beforeEach(() => {
-      spy = sinon.spy(o => Promise.resolve(o))
-      getPreview = previewBuilder([
-        [o => o.file.type === 'application/pdf', spy]
-      ])
-      file = getFile('foo.pdf', 'application/pdf')
-      promise = getPreview({file})
-    })
+    describe('for a pdf file', () => {
+      beforeEach(() => {
+        getPreview = previewBuilder([
+          [o => o.file.type === 'application/pdf', getPDFPreview]
+        ])
+        file = getFile('foo.pdf', 'application/pdf')
+        promise = getPreview({file})
+      })
 
-    it('calls the custom preview function when the file type matches', () => {
-      expect(spy.called).to.be.ok()
-    })
+      it('returns an iframe tag with the file content', () => {
+        return promise.then((value) => {
+          expect(value.nodeName).to.eql('IFRAME')
+        })
+      })
 
-    it('returns the same promise on successive calls', () => {
-      expect(getPreview({file})).to.be(promise)
+      it('returns the same promise on successive calls', () => {
+        expect(getPreview({file})).to.be(promise)
+      })
     })
 
     describe('for a text file', (done) => {
@@ -96,10 +99,9 @@ describe('previewBuilder()', () => {
         promise = getPreview({file})
       })
 
-      it('returns pre tag with the file content', (done) => {
-        promise.then((value) => {
+      it('returns pre tag with the file content', () => {
+        return promise.then((value) => {
           expect(value.outerHTML).to.eql('<pre>foo</pre>')
-          done()
         })
       })
     })
