@@ -356,6 +356,98 @@ describe('VersionEditor', () => {
     })
   })
 
+  describe('dragging the top handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.top-handle')
+
+      mousedown(handle, {x: 300, y: 0})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio and horizontal center', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 320, y: 50})
+      expect(box.getBoundingClientRect()).to.eql(getBox(125, 50, 350, 350))
+
+      mousemove(handle, {x: 300, y: -100})
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+    })
+  })
+
+  describe('dragging the bottom handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.bottom-handle')
+
+      mousedown(handle, {x: 300, y: 400})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio and horizontal center', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 320, y: 350})
+      expect(box.getBoundingClientRect()).to.eql(getBox(125, 0, 350, 350))
+
+      mousemove(handle, {x: 300, y: 450})
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+    })
+  })
+
+  describe('dragging the left handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.left-handle')
+
+      mousedown(handle, {x: 100, y: 200})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio and vertical center', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 150, y: 250})
+      expect(box.getBoundingClientRect()).to.eql(getBox(150, 25, 350, 350))
+
+      mousemove(handle, {x: 50, y: 220})
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+    })
+  })
+
+  describe('dragging the right handle', () => {
+    let handle
+    beforeEach(() => {
+      handle = editor.element.querySelector('.right-handle')
+
+      mousedown(handle, {x: 500, y: 200})
+    })
+
+    afterEach(() => {
+      mouseup(handle)
+    })
+
+    it('resizes the box conserving the initial ratio and vertical center', () => {
+      const box = editor.element.querySelector('.version-box')
+
+      mousemove(handle, {x: 450, y: 250})
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 25, 350, 350))
+
+      mousemove(handle, {x: 550, y: 220})
+      expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400))
+    })
+  })
+
   describe('pressing and dragging on the background image', () => {
     let clone
     beforeEach(() => {
@@ -409,6 +501,18 @@ function computeBounds () {
   } else if (this.classList.contains('bottom-right-handle')) {
     const {bottom, right} = this.parentNode.getBoundingClientRect()
     return getBox(right - 2, bottom - 2, 4, 4)
+  } else if (this.classList.contains('top-handle')) {
+    const {top, left, width} = this.parentNode.getBoundingClientRect()
+    return getBox(left - 2 + width / 2, top - 2, 4, 4)
+  } else if (this.classList.contains('bottom-handle')) {
+    const {bottom, left, width} = this.parentNode.getBoundingClientRect()
+    return getBox(left - 2 + width / 2, bottom - 2, 4, 4)
+  } else if (this.classList.contains('left-handle')) {
+    const {top, left, height} = this.parentNode.getBoundingClientRect()
+    return getBox(left - 2, top - 2 + height / 2, 4, 4)
+  } else if (this.classList.contains('right-handle')) {
+    const {top, right, height} = this.parentNode.getBoundingClientRect()
+    return getBox(right - 2, top - 2 + height / 2, 4, 4)
   } else {
     return getBox(0, 0, 50, 50)
   }
