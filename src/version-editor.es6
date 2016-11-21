@@ -144,7 +144,7 @@ export default class VersionEditor {
       const ratio = this.version.getRatio()
       const center = bb.left + bb.width / 2
       let newHeight = bb.bottom - y
-      let newWidth = newHeight / ratio
+      let newWidth = newHeight * ratio
 
       ;[newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight
@@ -170,7 +170,7 @@ export default class VersionEditor {
       const ratio = this.version.getRatio()
       const center = bb.left + bb.width / 2
       let newHeight = y - bb.top
-      let newWidth = newHeight / ratio
+      let newWidth = newHeight * ratio
 
       ;[newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight
