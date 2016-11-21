@@ -48,7 +48,10 @@ export function triggerImageLoad (cb) {
 export function withFakeContext () {
   let safGetContext
   beforeEach(() => {
-    const FakeContext = {drawImage: sinon.spy()}
+    const FakeContext = {
+      drawImage: sinon.spy(),
+      clearRect: sinon.spy()
+    }
 
     safGetContext = window.HTMLCanvasElement.prototype.getContext
     window.HTMLCanvasElement.prototype.getContext = () => FakeContext

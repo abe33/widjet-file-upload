@@ -16,6 +16,7 @@ export default class Version {
 
   getVersion (image) {
     const [canvas, context] = this.getCanvas()
+    context.clearRect(...this.targetBox)
     context.drawImage(image, ...this.getBox(image))
     return canvas
   }
