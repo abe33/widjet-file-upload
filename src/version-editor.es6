@@ -227,7 +227,7 @@ export default class VersionEditor {
       ;[newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight
       ], [
-        b.height - bb.top,
+        b.width - bb.left,
         Math.min(center * 2, (b.height - center) * 2)
       ])
 
