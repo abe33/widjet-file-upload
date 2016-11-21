@@ -65,7 +65,7 @@ widgets.define('file-versions', (options) => {
                 version.setBox(box)
                 version.getVersion(img)
                 onVersionsChange && onVersionsChange(input, collectVersions())
-              })
+              }).catch(() => {})
             }))
             versionsContainer.appendChild(div)
           })
