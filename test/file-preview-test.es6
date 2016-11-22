@@ -31,7 +31,7 @@ describe('file-preview', () => {
   let wrapper, input, loadedSpy
 
   beforeEach(() => {
-    setPageContent(`<input type="file" name="file">`)
+    setPageContent(`<input type="file" id="file" name="file">`)
 
     widgets('file-preview', 'input[type="file"]', {on: 'init'})
 
@@ -41,15 +41,41 @@ describe('file-preview', () => {
     getTestRoot().addEventListener('preview:loaded', loadedSpy)
   })
 
+  afterEach(() => {
+    widgets.release('file-preview')
+  })
+
   it('wraps the input into a div', () => {
     expect(wrapper).not.to.be(null)
     expect(input).not.to.be(null)
   })
 
+  it('uses the input for the label for attribute', () => {
+    expect(wrapper.querySelector('label').getAttribute('for')).to.eql('file')
+  })
+
+  describe('when the input does not have has an id', () => {
+    beforeEach(() => {
+      setPageContent(`<input type="file" name="file">`)
+
+      widgets('file-preview', 'input[type="file"]', {on: 'init'})
+
+      wrapper = getTestRoot().querySelector('.file-input')
+      input = wrapper.querySelector('input[type="file"]')
+      loadedSpy = sinon.spy()
+      getTestRoot().addEventListener('preview:loaded', loadedSpy)
+    })
+
+    it('generates an id for the file input', () => {
+      expect(input.id).to.be.ok()
+      expect(input.id).to.eql(wrapper.querySelector('label').getAttribute('for'))
+    })
+  })
+
   describe('when a file is already present', () => {
     let file
     beforeEach(() => {
-      setPageContent(`<input type="file" name="file">`)
+      setPageContent(`<input type="file" id="file" name="file">`)
 
       file = getFile('foo.jpg', 'image/jpeg')
       input = getTestRoot().querySelector('input[type="file"]')
@@ -135,9 +161,9 @@ describe('file-preview', () => {
     describe('when the preview have been generated', () => {
       beforeEach(() => waitsFor('preview loaded', () => loadedSpy.called))
 
-      it('has updated the progress using the onprogress event information', () => {
+      it('updates the progress using the onprogress event information', () => {
         const progress = wrapper.querySelector('progress')
-        expect(progress.value).not.to.equal(0)
+        return waitsFor('progress value changed', () => progress.value !== 0)
       })
 
       it('places the preview in the corresponding container', () => {

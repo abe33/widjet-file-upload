@@ -4,6 +4,9 @@ import {getNode, when, merge, last} from 'widjet-utils'
 
 import {previewBuilder, disposePreview} from './preview'
 
+let id = 0
+const nextId = () => `file-input-${++id}`
+
 widgets.define('file-preview', (options) => {
   const {
     wrap, previewSelector, nameMetaSelector, mimeMetaSelector, dimensionsMetaSelector, sizeMetaSelector, progressSelector, resetButtonSelector, formatSize, formatDimensions
@@ -12,9 +15,11 @@ widgets.define('file-preview', (options) => {
   const getPreview = previewBuilder(options.previewers)
 
   return (input) => {
+    if (!input.id) { input.id = nextId() }
+
     const container = input.parentNode
-    const wrapper = wrap(input)
     const nextSibling = input.nextElementSibling
+    const wrapper = wrap(input)
     container.insertBefore(wrapper, nextSibling)
 
     const previewContainer = wrapper.querySelector(previewSelector)
@@ -118,7 +123,9 @@ const writeText = (node, value) => node && (node.textContent = value)
 
 const writeValue = (node, value) => node && (node.value = value)
 
-const unitPerSize = ['B', 'kB', 'MB', 'GB', 'TB'].map((u, i) => [Math.pow(1000, i + 1), u, i === 0 ? 1 : Math.pow(1000, i)])
+const unitPerSize = ['B', 'kB', 'MB', 'GB', 'TB'].map((u, i) =>
+  [Math.pow(1000, i + 1), u, i === 0 ? 1 : Math.pow(1000, i)]
+)
 
 const round = n => Math.floor(n * 100) / 100
 
@@ -143,7 +150,7 @@ const defaults = {
     const wrapper = getNode(`
       <div class="file-input">
         <div class='file-container'>
-          <label></label>
+          <label for="${input.id}"></label>
           <div class="preview"></div>
           <button type="button" tabindex="-1"><span>Reset</span></button>
         </div>
@@ -158,7 +165,9 @@ const defaults = {
         </div>
       </div>
     `)
-    wrapper.querySelector('label').appendChild(input)
+
+    const label = wrapper.querySelector('label')
+    label.parentNode.insertBefore(input, label)
     return wrapper
   }
 }

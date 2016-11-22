@@ -121,6 +121,16 @@ describe('file-versions', () => {
           expect(versionSpy.called).to.be.ok()
         })
       })
+
+      describe('clicking on the cancel save button', () => {
+        beforeEach(() => {
+          click(document.body.querySelector('.version-editor .cancel'))
+        })
+
+        it('removes the editor from the DOM', () => {
+          expect(document.body.querySelector('.version-editor')).to.be(null)
+        })
+      })
     })
 
     describe('then changed', () => {
