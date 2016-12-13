@@ -42,6 +42,8 @@ Both widgets works on a file input, but `file-versions` will require that you en
 
 The `file-preview` widget wraps a `file` input into a `file-input` `div` that will be used to display a file preview and various information about the picked file. It also listens to the `change` event and will attempt to generate a preview for that file based on the defined previewers.
 
+![file-preview](https://github.com/abe33/widjet-file-upload/blob/master/file-preview.jpg?raw=true)
+
 The `file-preview` widget rely on the `FileReader` API and will be constrained by its support. This can be handled using the following condition:
 
 ```js
