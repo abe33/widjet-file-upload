@@ -12,7 +12,7 @@ const imageType = (...ts) => {
 }
 
 export const DEFAULT_PREVIEWERS = [
-  [imageType('jpeg', 'png', 'gif', 'bmp', 'svg+xml'), o => getImagePreview(o)],
+  [imageType('jpeg', 'png', 'gif', 'bmp', 'svg+xml'), getImagePreview],
   [always, o => Promise.resolve()]
 ]
 
