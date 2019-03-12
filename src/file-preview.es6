@@ -29,7 +29,7 @@ widgets.define('file-preview', (options) => {
     const mime = wrapper.querySelector(mimeMetaSelector)
     const progress = wrapper.querySelector(progressSelector)
     const resetButton = wrapper.querySelector(resetButtonSelector)
-    const onprogress = (e) => writeValue(progress, (e.loaded / e.total) * 100)
+    const onprogress = (e) => e.total > 0 && writeValue(progress, (e.loaded / e.total) * 100)
 
     const composite = new CompositeDisposable()
 
