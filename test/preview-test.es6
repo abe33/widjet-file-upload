@@ -20,35 +20,74 @@ describe('previewBuilder()', () => {
     })
 
     describe('for an image file', (done) => {
-      beforeEach(() => {
-        file = getFile('foo.jpg', 'image/jpeg')
-        promise = getPreview({file})
-      })
+      describe('with a simple content-type', () => {
 
-      it('returns a promise that resolve with an image', (done) => {
-        promise.then((img) => {
-          expect(img.nodeName).to.eql('IMG')
-          expect(img.hasAttribute('src')).to.be.ok()
-          done()
-        })
-      })
-
-      describe('called a second time', () => {
-        it('returns the same promise object', () => {
-          expect(getPreview({file})).to.be(promise)
-        })
-      })
-
-      describe('called with a progress callback', () => {
         beforeEach(() => {
-          disposePreview(file)
+          file = getFile('foo.jpg', 'image/jpeg')
+          promise = getPreview({file})
         })
 
-        it('sets the file reader progress handler with it', (done) => {
-          spy = sinon.spy()
-          getPreview({file, onprogress: spy}).then(() => {
-            expect(spy.called).to.be.ok()
+        it('returns a promise that resolve with an image', (done) => {
+          promise.then((img) => {
+            expect(img.nodeName).to.eql('IMG')
+            expect(img.hasAttribute('src')).to.be.ok()
             done()
+          })
+        })
+
+        describe('called a second time', () => {
+          it('returns the same promise object', () => {
+            expect(getPreview({file})).to.be(promise)
+          })
+        })
+
+        describe('called with a progress callback', () => {
+          beforeEach(() => {
+            disposePreview(file)
+          })
+
+          it('sets the file reader progress handler with it', (done) => {
+            spy = sinon.spy()
+            getPreview({file, onprogress: spy}).then(() => {
+              expect(spy.called).to.be.ok()
+              done()
+            })
+          })
+        })
+      })
+
+      describe('with a more complex content-type', () => {
+
+        beforeEach(() => {
+          file = getFile('foo.jpg', 'image/jpeg; charset=binary')
+          promise = getPreview({file})
+        })
+
+        it('returns a promise that resolve with an image', (done) => {
+          promise.then((img) => {
+            expect(img.nodeName).to.eql('IMG')
+            expect(img.hasAttribute('src')).to.be.ok()
+            done()
+          })
+        })
+
+        describe('called a second time', () => {
+          it('returns the same promise object', () => {
+            expect(getPreview({file})).to.be(promise)
+          })
+        })
+
+        describe('called with a progress callback', () => {
+          beforeEach(() => {
+            disposePreview(file)
+          })
+
+          it('sets the file reader progress handler with it', (done) => {
+            spy = sinon.spy()
+            getPreview({file, onprogress: spy}).then(() => {
+              expect(spy.called).to.be.ok()
+              done()
+            })
           })
         })
       })

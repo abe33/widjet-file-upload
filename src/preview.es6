@@ -7,8 +7,8 @@ export function fileKey (file) {
 }
 
 const imageType = (...ts) => {
-  const types = ts.map(t => `image/${t}`)
-  return o => types.indexOf(o.file.type) > -1
+  const types = ts.map(t => new RegExp(`\\bimage/${t}\\b`))
+  return o => types.some(re => re.test(o.file.type))
 }
 
 export const DEFAULT_PREVIEWERS = [
