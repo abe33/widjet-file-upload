@@ -1,68 +1,68 @@
-import {head, last} from 'widjet-utils'
-import {ratio, dimensions} from './utils'
+import {head, last} from 'widjet-utils';
+import {ratio, dimensions} from './utils';
 
 export default class Version {
-  constructor (name, size) {
-    this.name = name
-    this.size = size
-    this.targetBox = [0, 0].concat(size)
-    this.width = head(size)
-    this.height = last(size)
+  constructor(name, size) {
+    this.name = name;
+    this.size = size;
+    this.targetBox = [0, 0].concat(size);
+    this.width = head(size);
+    this.height = last(size);
   }
 
-  setBox (box) {
-    this.box = box
+  setBox(box) {
+    this.box = box;
   }
 
-  getVersion (image) {
-    const [canvas, context] = this.getCanvas()
-    context.clearRect(...this.targetBox)
-    context.drawImage(image, ...this.getBox(image))
-    return canvas
+  getVersion(image) {
+    const [canvas, context] = this.getCanvas();
+    context.clearRect(...this.targetBox);
+    context.drawImage(image, ...this.getBox(image));
+    return canvas;
   }
 
-  getRatio () { return ratio(this.size) }
+  getRatio() { return ratio(this.size); }
 
-  getCanvas () {
+  getCanvas() {
     if (!this.canvas) {
-      this.canvas = document.createElement('canvas')
-      this.context = this.canvas.getContext('2d')
+      this.canvas = document.createElement('canvas');
+      this.context = this.canvas.getContext('2d');
 
-      this.canvas.width = this.width
-      this.canvas.height = this.height
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
     }
-    return [this.canvas, this.context]
+    return [this.canvas, this.context];
   }
 
-  getBox (image) {
+  getBox(image) {
     return this.box
       ? this.box.concat(this.targetBox)
-      : this.getDefaultBox(image)
+      : this.getDefaultBox(image);
   }
 
-  getDefaultBox (image) {
+  getDefaultBox(image) {
     return ratio(dimensions(image)) > this.getRatio()
       ? this.getDefaultHorizontalBox(image)
-      : this.getDefaultVerticalBox(image)
+      : this.getDefaultVerticalBox(image);
   }
 
-  getDefaultHorizontalBox (image) {
-    const width = image.naturalHeight * this.getRatio()
+  getDefaultHorizontalBox(image) {
+    const width = image.naturalHeight * this.getRatio();
     return [
       (image.naturalWidth - width) / 2,
       0,
       width,
-      image.naturalHeight
-    ].concat(this.targetBox)
+      image.naturalHeight,
+    ].concat(this.targetBox);
   }
 
-  getDefaultVerticalBox (image) {
-    const height = image.naturalWidth / this.getRatio()
+  getDefaultVerticalBox(image) {
+    const height = image.naturalWidth / this.getRatio();
     return [
       0,
       (image.naturalHeight - height) / 2,
       image.naturalWidth,
-      height
-    ].concat(this.targetBox)
+      height,
+    ].concat(this.targetBox);
   }
 }

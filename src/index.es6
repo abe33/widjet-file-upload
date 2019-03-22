@@ -1,5 +1,5 @@
-import './file-preview'
-import './file-versions'
+import './file-preview';
+import './file-versions';
 
 import {
   disposePreview,
@@ -7,8 +7,8 @@ import {
   getPDFPreview,
   getTextPreview,
   previewBuilder,
-  resetPreviewCache
-} from './preview'
+  resetPreviewCache,
+} from './preview';
 
 export {
   disposePreview,
@@ -16,5 +16,5 @@ export {
   getPDFPreview,
   getTextPreview,
   previewBuilder,
-  resetPreviewCache
-}
+  resetPreviewCache,
+};
