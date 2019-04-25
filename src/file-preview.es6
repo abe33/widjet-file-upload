@@ -82,7 +82,7 @@ widgets.define('file-preview', (options) => {
       writeValue(progress, 0);
 
       return getPreview({file, onprogress}).then((preview) => {
-        preview && preview.nodeName === 'IMG'
+        preview && preview.nodeName === 'IMG' && !preview.complete
           ? preview.onload = () => {
             writeText(dimensions, formatDimensions(preview));
             previewLoaded(file);
