@@ -144,9 +144,9 @@ export default class VersionEditor {
       const ratio = this.version.getRatio();
       const center = bb.left + bb.width / 2;
       let newHeight = bb.bottom - y;
-      let newWidth = newHeight * ratio
+      let newWidth = newHeight * ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         Math.min(center * 2, (b.width - center) * 2),
@@ -170,9 +170,9 @@ export default class VersionEditor {
       const ratio = this.version.getRatio();
       const center = bb.left + bb.width / 2;
       let newHeight = y - bb.top;
-      let newWidth = newHeight * ratio
+      let newWidth = newHeight * ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         Math.min(center * 2, (b.width - center) * 2),
@@ -196,9 +196,9 @@ export default class VersionEditor {
       const ratio = this.version.getRatio();
       const center = bb.top + bb.height / 2;
       let newWidth = bb.right - x;
-      let newHeight = newWidth / ratio
+      let newHeight = newWidth / ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         bb.right,
@@ -222,9 +222,9 @@ export default class VersionEditor {
       const ratio = this.version.getRatio();
       const center = bb.top + bb.height / 2;
       let newWidth = x - bb.left;
-      let newHeight = newWidth / ratio
+      let newHeight = newWidth / ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         b.width - bb.left,
@@ -247,9 +247,9 @@ export default class VersionEditor {
       const x = mouseX + (hb.width / 2);
       const ratio = this.version.getRatio();
       let newWidth = bb.right - x;
-      let newHeight = newWidth / ratio
+      let newHeight = newWidth / ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         bb.right, bb.bottom,
@@ -271,9 +271,9 @@ export default class VersionEditor {
       const x = mouseX + (hb.width / 2);
       const ratio = this.version.getRatio();
       let newWidth = x - bb.left;
-      let newHeight = newWidth / ratio
+      let newHeight = newWidth / ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         b.width - bb.left, b.bottom,
@@ -295,9 +295,9 @@ export default class VersionEditor {
       const x = mouseX + (hb.width / 2);
       const ratio = this.version.getRatio();
       let newWidth = bb.right - x;
-      let newHeight = newWidth / ratio
+      let newHeight = newWidth / ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         bb.right, b.height - bb.top,
@@ -319,9 +319,9 @@ export default class VersionEditor {
       const x = mouseX + (hb.width / 2);
       const ratio = this.version.getRatio();
       let newWidth = x - bb.left;
-      let newHeight = newWidth / ratio
+      let newHeight = newWidth / ratio;
 
-      ;[newWidth, newHeight] = this.contraintBoxSize([
+      [newWidth, newHeight] = this.contraintBoxSize([
         newWidth, newHeight,
       ], [
         b.width - bb.left, b.height - bb.top,
@@ -345,9 +345,9 @@ export default class VersionEditor {
 
       if (targetX < offsetX) {
         let newWidth = offsetX - targetX;
-        let newHeight = newWidth / ratio
+        let newHeight = newWidth / ratio;
 
-        ;[newWidth, newHeight] = this.contraintBoxSize([
+        [newWidth, newHeight] = this.contraintBoxSize([
           newWidth, newHeight,
         ], [
           offsetX, offsetY,
@@ -361,9 +361,9 @@ export default class VersionEditor {
         );
       } else {
         let newWidth = targetX - offsetX;
-        let newHeight = newWidth / ratio
+        let newHeight = newWidth / ratio;
 
-        ;[newWidth, newHeight] = this.contraintBoxSize([
+        [newWidth, newHeight] = this.contraintBoxSize([
           newWidth, newHeight,
         ], [
           b.width - offsetX, b.height - offsetY,
