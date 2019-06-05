@@ -174,6 +174,20 @@ describe('VersionEditor', () => {
       expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400));
     });
 
+    it('does not warn when the sample box is bigger than the output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 100, y: 100});
+      expect(box.classList.contains('upsampling')).not.to.be.ok();
+    });
+
+    it('warns when the sample box is smaller than the preferred output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 400, y: 400});
+      expect(box.classList.contains('upsampling')).to.be.ok();
+    });
+
     describe('when the image has a portrait orientation', () => {
       let otherHandle;
 
@@ -223,6 +237,20 @@ describe('VersionEditor', () => {
 
       mousemove(handle, {x: 550, y: 20});
       expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400));
+    });
+
+    it('does not warn when the sample box is bigger than the output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 450, y: 20});
+      expect(box.classList.contains('upsampling')).not.to.be.ok();
+    });
+
+    it('warns when the sample box is smaller than the preferred output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 200, y: 300});
+      expect(box.classList.contains('upsampling')).to.be.ok();
     });
 
     describe('when the image has a portrait orientation', () => {
@@ -276,6 +304,20 @@ describe('VersionEditor', () => {
       expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400));
     });
 
+    it('does not warn when the sample box is bigger than the output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 150, y: 380});
+      expect(box.classList.contains('upsampling')).not.to.be.ok();
+    });
+
+    it('warns when the sample box is smaller than the preferred output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 350, y: 50});
+      expect(box.classList.contains('upsampling')).to.be.ok();
+    });
+
     describe('when the image has a portrait orientation', () => {
       let otherHandle;
 
@@ -325,6 +367,20 @@ describe('VersionEditor', () => {
 
       mousemove(handle, {x: 550, y: 380});
       expect(box.getBoundingClientRect()).to.eql(getBox(100, 0, 400, 400));
+    });
+
+    it('does not warn when the sample box is bigger than the output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 450, y: 380});
+      expect(box.classList.contains('upsampling')).not.to.be.ok();
+    });
+
+    it('warns when the sample box is smaller than the preferred output', () => {
+      const box = editor.element.querySelector('.version-box');
+
+      mousemove(handle, {x: 150, y: 50});
+      expect(box.classList.contains('upsampling')).to.be.ok();
     });
 
     describe('when the image has a portrait orientation', () => {

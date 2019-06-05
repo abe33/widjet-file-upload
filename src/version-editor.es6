@@ -119,6 +119,7 @@ export default class VersionEditor {
   }
 
   updateBox(left, top, width, height) {
+    this.box.classList.toggle('upsampling', width < this.version.width || height < this.version.height);
     this.box.style.cssText = `
       left: ${px(left)};
       top: ${px(top)};
