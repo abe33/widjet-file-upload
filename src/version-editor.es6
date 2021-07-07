@@ -123,7 +123,7 @@ export default class VersionEditor {
   getScale() {
     // In safari, the width retrieved won't be the one we're seeing
     // unless we're calling getComputedStyle to force a redraw.
-    const width = parseInt(window.getComputedStyle(this.clone), 10);
+    const width = parseInt(window.getComputedStyle(this.clone).width, 10);
     return width / this.source.naturalWidth;
   }
 
