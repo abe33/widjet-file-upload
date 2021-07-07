@@ -101,10 +101,7 @@ export default class VersionEditor {
   }
 
   getVersionBox() {
-    // In safari, the width retrieved won't be the one we're seeing
-    // unless we're calling getComputedStyle to force a redraw.
-    window.getComputedStyle(this.clone);
-    const scale = this.clone.width / this.source.naturalWidth;
+    const scale = this.getScale();
     return [
       this.box.offsetLeft / scale,
       this.box.offsetTop / scale,
@@ -114,16 +111,20 @@ export default class VersionEditor {
   }
 
   boxToPreview(boxData) {
-    // In safari, the width retrieved won't be the one we're seeing
-    // unless we're calling getComputedStyle to force a redraw.
-    window.getComputedStyle(this.clone);
-    const scale = this.clone.width / this.source.naturalWidth;
+    const scale = this.getScale();
     this.updateBox(
       boxData[0] * scale,
       boxData[1] * scale,
       boxData[2] * scale,
       boxData[3] * scale
     );
+  }
+
+  getScale() {
+    // In safari, the width retrieved won't be the one we're seeing
+    // unless we're calling getComputedStyle to force a redraw.
+    const width = parseInt(window.getComputedStyle(this.clone), 10);
+    return width / this.source.naturalWidth;
   }
 
   updateBox(left, top, width, height) {
