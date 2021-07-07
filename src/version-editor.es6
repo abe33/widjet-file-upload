@@ -101,6 +101,9 @@ export default class VersionEditor {
   }
 
   getVersionBox() {
+    // In safari, the width retrieved won't be the one we're seeing
+    // unless we're calling getComputedStyle to force a redraw.
+    window.getComputedStyle(this.clone);
     const scale = this.clone.width / this.source.naturalWidth;
     return [
       this.box.offsetLeft / scale,
@@ -111,6 +114,9 @@ export default class VersionEditor {
   }
 
   boxToPreview(boxData) {
+    // In safari, the width retrieved won't be the one we're seeing
+    // unless we're calling getComputedStyle to force a redraw.
+    window.getComputedStyle(this.clone);
     const scale = this.clone.width / this.source.naturalWidth;
     this.updateBox(
       boxData[0] * scale,
