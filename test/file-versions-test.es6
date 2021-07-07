@@ -111,6 +111,7 @@ describe('file-versions', () => {
       describe('clicking on the editor save button', () => {
         beforeEach(() => {
           click(document.body.querySelector('.version-editor .save'));
+          return waitsFor('editor removed', () => !document.body.querySelector('.version-editor'));
         });
 
         it('removes the editor from the DOM', () => {

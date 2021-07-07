@@ -23,7 +23,9 @@ export function editVersion(source, version) {
   return new Promise((resolve, reject) => {
     const editor = new VersionEditor(source, version);
     editor.onSave = () => {
+      console.log('on save');
       const box = editor.getVersionBox();
+      console.log(editor.element);
       detachNode(editor.element);
       editor.dispose();
       resolve(box);

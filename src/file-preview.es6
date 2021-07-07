@@ -82,14 +82,20 @@ widgets.define('file-preview', (options) => {
       writeValue(progress, 0);
 
       return getPreview({file, onprogress}).then((preview) => {
-        preview && preview.nodeName === 'IMG' && !preview.complete
-          ? preview.onload = () => {
+        if (preview) { previewContainer.appendChild(preview); }
+
+        if (preview && preview.nodeName === 'IMG' && !preview.complete) {
+          preview.onload = () => {
             writeText(dimensions, formatDimensions(preview));
             previewLoaded(file);
+          };
+        } else {
+          if (preview && preview.nodeName === 'IMG') {
+            writeText(dimensions, formatDimensions(preview));
           }
-          : previewLoaded(file);
+          previewLoaded(file);
+        }
 
-        if (preview) { previewContainer.appendChild(preview); }
         filesById[input.id] = file;
         widgets.dispatch(input, 'preview:ready');
       });

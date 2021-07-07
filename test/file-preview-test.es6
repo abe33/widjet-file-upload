@@ -7,7 +7,7 @@ import {setPageContent, getTestRoot} from 'widjet-test-utils/dom';
 import {waitsFor} from 'widjet-test-utils/async';
 import {click} from 'widjet-test-utils/events';
 
-import {pickFile, getFile, triggerImageLoad} from './helpers';
+import {pickFile, getFile, triggerImageLoad, BLOB_SIZES} from './helpers';
 
 import {formatSize} from '../src/file-preview';
 import {previewBuilder, getTextPreview} from '../src/preview';
@@ -100,7 +100,7 @@ describe('file-preview', () => {
       expect(wrapper.querySelector('.name').textContent).to.eql('foo.jpg');
       expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg');
       expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.width}x${img.height}px`);
-      expect(wrapper.querySelector('.size').textContent).to.eql('3B');
+      expect(wrapper.querySelector('.size').textContent).to.eql(BLOB_SIZES['image/jpeg']);
     });
   });
 
@@ -181,7 +181,7 @@ describe('file-preview', () => {
         expect(wrapper.querySelector('.name').textContent).to.eql('foo.jpg');
         expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg');
         expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.width}x${img.height}px`);
-        expect(wrapper.querySelector('.size').textContent).to.eql('3B');
+        expect(wrapper.querySelector('.size').textContent).to.eql(BLOB_SIZES['image/jpeg']);
       });
 
       describe('clicking on the reset button', () => {
@@ -315,7 +315,8 @@ describe('file-preview', () => {
         file = getFile('foo.jpg', 'image/jpeg');
         pickFile(input, file);
 
-        return getPreview({file});
+        getPreview({file});
+        return waitsFor('preview loaded', () => loadedSpy.called);
       });
 
       it('generates a preview image', () => {
@@ -326,12 +327,12 @@ describe('file-preview', () => {
       it('fills the meta div with the preview information', () => {
         const img = wrapper.querySelector('.preview img');
         // forces call of the dummy image callback since it's not a proper image
-        img.onload();
+        // img.onload();
 
         expect(wrapper.querySelector('.name').textContent).to.eql('foo.jpg');
         expect(wrapper.querySelector('.mime').textContent).to.eql('image/jpeg');
         expect(wrapper.querySelector('.dimensions').textContent).to.eql(`${img.width}px, ${img.height}px`);
-        expect(wrapper.querySelector('.size').textContent).to.eql('3o');
+        expect(wrapper.querySelector('.size').textContent).to.eql('631o');
       });
     });
 
