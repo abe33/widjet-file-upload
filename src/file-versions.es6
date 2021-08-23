@@ -41,38 +41,49 @@ widgets.define('file-versions', (options) => {
     container.appendChild(versionsContainer);
     let versionsSubs;
 
+    const initialValue = container.querySelector(options.initialValueSelector || options.previewSelector || 'img');
+    if (initialValue) {
+      buildVersions(initialValue);
+    }
+
     return new CompositeDisposable([
       new DisposableEvent(input, 'preview:removed', () => {
-        versionsContainer.innerHTML = '';
-        versionsSubs && versionsSubs.dispose();
+        disposeVersions();
       }),
       new DisposableEvent(input, 'preview:loaded', () => {
-        versionsContainer.innerHTML = '';
-        versionsSubs && versionsSubs.dispose();
+        disposeVersions();
 
-        const img = container.querySelector('img');
-
-        if (img) {
-          versionsSubs = new CompositeDisposable();
-
-          asPair(versions).forEach(([versionName, version]) => {
-            version.setBox();
-            const div = getVersion(img, version);
-            const btn = div.querySelector('button');
-
-            versionsSubs.add(new DisposableEvent(btn, 'click', () => {
-              editVersion(img, version).then((box) => {
-                version.setBox(box);
-                version.getVersion(img);
-                onVersionsChange && onVersionsChange(input, collectVersions());
-              }).catch(() => {});
-            }));
-            versionsContainer.appendChild(div);
-          });
-        }
+        const img = container.querySelector(options.previewSelector || 'img');
+        buildVersions(img);
       }),
       new Disposable(() => versionsSubs && versionsSubs.dispose()),
     ]);
+
+    function disposeVersions() {
+      versionsContainer.innerHTML = '';
+      versionsSubs && versionsSubs.dispose();
+    }
+
+    function buildVersions(img) {
+      if (img) {
+        versionsSubs = new CompositeDisposable();
+
+        asPair(versions).forEach(([versionName, version]) => {
+          version.setBox();
+          const div = getVersion(img, version);
+          const btn = div.querySelector('button');
+
+          versionsSubs.add(new DisposableEvent(btn, 'click', () => {
+            editVersion(img, version).then((box) => {
+              version.setBox(box);
+              version.getVersion(img);
+              onVersionsChange && onVersionsChange(input, collectVersions());
+            }).catch(() => {});
+          }));
+          versionsContainer.appendChild(div);
+        });
+      }
+    }
 
     function collectVersions() {
       return asPair(versions).reduce((memo, [name, version]) => {
