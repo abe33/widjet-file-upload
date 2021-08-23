@@ -22,7 +22,7 @@ widgets.define('file-versions', (options) => {
     return div;
   });
   return (input, widget) => {
-    const container = parent(input, '.file-input');
+    const container = parent(input, options.containerSelector || '.file-input');
     const versionsContainer = document.createElement('div');
     const versionsData = versionsProvider(input);
     const versionBoxesData = versionBoxesProvider(input);
