@@ -43,7 +43,7 @@ widgets.define('file-versions', (options) => {
 
     const initialValue = container.querySelector(options.initialValueSelector || options.previewSelector || 'img');
     if (initialValue) {
-      buildVersions(initialValue);
+      buildVersions(initialValue, false);
     }
 
     return new CompositeDisposable([
@@ -64,12 +64,14 @@ widgets.define('file-versions', (options) => {
       versionsSubs && versionsSubs.dispose();
     }
 
-    function buildVersions(img) {
+    function buildVersions(img, resetBoxes = true) {
       if (img) {
         versionsSubs = new CompositeDisposable();
 
         asPair(versions).forEach(([versionName, version]) => {
-          version.setBox();
+          if (resetBoxes) {
+            version.setBox();
+          }
           const div = getVersion(img, version);
           const btn = div.querySelector('button');
 
