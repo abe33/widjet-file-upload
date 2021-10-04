@@ -107,7 +107,10 @@ export function withFakeContext() {
       clearRect: sinon.spy(),
     };
 
-    safGetContext = window.HTMLCanvasElement.prototype.getContext;
+    window.getComputedStyle = (o) => {
+      return o.getBoundingClientRect();
+    };
+
     safeGetContext = window.HTMLCanvasElement.prototype.getContext;
     window.HTMLCanvasElement.prototype.getContext = () => FakeContext;
   });
