@@ -94,7 +94,7 @@ export function triggerImageLoad(cb) {
 }
 
 export function withFakeContext() {
-  let safGetContext;
+  let safeGetContext;
   beforeEach(() => {
     resetPreviewCache();
     const editor = document.body.querySelector('.version-editor');
@@ -108,10 +108,11 @@ export function withFakeContext() {
     };
 
     safGetContext = window.HTMLCanvasElement.prototype.getContext;
+    safeGetContext = window.HTMLCanvasElement.prototype.getContext;
     window.HTMLCanvasElement.prototype.getContext = () => FakeContext;
   });
 
   afterEach(() => {
-    window.HTMLCanvasElement.prototype.getContext = safGetContext;
+    window.HTMLCanvasElement.prototype.getContext = safeGetContext;
   });
 }
