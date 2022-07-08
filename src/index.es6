@@ -1,5 +1,6 @@
 import './file-preview';
 import './file-versions';
+import './file-upload';
 
 import {
   disposePreview,
