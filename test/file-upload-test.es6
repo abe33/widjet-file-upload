@@ -9,7 +9,7 @@ import '../src/file-upload';
 
 import {pickFile, getFile, triggerImageLoad} from './helpers';
 
-describe('file-preview', () => {
+describe('file-upload', () => {
   jsdom({url: 'http://localhost'});
   triggerImageLoad();
 
