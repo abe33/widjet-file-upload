@@ -5,11 +5,10 @@ let id = 0;
 const nextId = () => `file-upload-${++id}`;
 
 widgets.define('file-upload', (options) => {
-  let {upload, nameAttribute} = options;
+  let {upload, nameAttribute, valueAttribute} = options;
 
-  if (nameAttribute == undefined) {
-    nameAttribute = 'name';
-  }
+  if (nameAttribute == undefined) { nameAttribute = 'name'; }
+  if (valueAttribute == undefined) { valueAttribute = 'value'; }
 
   if (!upload) {
     throw new Error('An upload function is mandatory');
@@ -23,7 +22,9 @@ widgets.define('file-upload', (options) => {
     target.id = `${baseId}-hidden`;
     target.type = 'hidden';
     target.setAttribute(nameAttribute, input.getAttribute(nameAttribute));
+    target.setAttribute(valueAttribute, input.getAttribute(valueAttribute));
     input.removeAttribute(nameAttribute);
+    input.removeAttribute(valueAttribute);
 
     input.parentNode.insertBefore(target, input);
 
